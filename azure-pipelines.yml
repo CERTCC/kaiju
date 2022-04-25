@@ -35,6 +35,7 @@ jobs:
         ghidraVersion: "10.1"
   pool:
     vmImage: 'Ubuntu-20.04'
+  continueOnError: ${{ eq(variables.ghidraVersion, 'master') }}
   steps:
 
   - bash: |
