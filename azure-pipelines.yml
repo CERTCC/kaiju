@@ -157,7 +157,7 @@ jobs:
 
   - bash: |
       set -e
-      Z3CLASSPATH=$(Pipeline.Workspace)/z3/build GHIDRA_INSTALL_DIR=$(find $(Pipeline.Workspace) -maxdepth 1 -type d -name 'ghidra_*') gradle --build-cache
+      Z3CLASSPATH=$(Pipeline.Workspace)/z3/build GHIDRA_INSTALL_DIR=$(find $(Pipeline.Workspace) -maxdepth 1 -type d -name 'ghidra_*') KAIJU_AUTOCATS_DIR=$AUTOCATS_DIR gradle --build-cache
     displayName: Build Kaiju extension and plugins
     workingDirectory: .
 
