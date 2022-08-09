@@ -13,7 +13,7 @@ jobs:
     GRADLE_USER_HOME: $(Pipeline.Workspace)/.gradle
     AUTOCATS_DIR: $(Pipeline.Workspace)/autocats
     GHIHORN_TEST_DIR: $(Pipeline.Workspace)/autocats/exe/ghihorn
-    GRADLE_VERSION: gradle-6.9.2
+    GRADLE_VERSION: gradle-7.5.1
     GRADLE_URL: https://services.gradle.org/distributions/$(GRADLE_VERSION)-bin.zip
     GRADLE_INSTALL_DIR: $(Pipeline.Workspace)/gradle
     Z3_VERSION: z3-4.8.14
@@ -93,7 +93,7 @@ jobs:
     inputs:
       key: '"$(GRADLE_URL)" | gradle'
       path: $(GRADLE_INSTALL_DIR)
-    displayName: Cache Gradle 6.x
+    displayName: Cache Gradle 7.x
 
   - bash: |
       set -ex
@@ -140,7 +140,7 @@ jobs:
       unzip -d $(GRADLE_INSTALL_DIR) gradle.zip
       rm gradle.zip
     workingDirectory: $(Pipeline.Workspace)
-    displayName: Download gradle 6.x binary from $(GRADLE_URL)
+    displayName: Download gradle 7.x binary from $(GRADLE_URL)
 
   - bash: |
       set -ex
