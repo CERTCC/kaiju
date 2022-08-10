@@ -43,13 +43,24 @@ public class GhidraDI {
      *         in the format: "x.y.z".
      */
      public static final String getGhidraVersionStr() {
+        //TODO: what if version is e.g. 10.2, no "z"? can we auto-add 0?
         return Application.getApplicationVersion();
      }
      
-     public static final boolean isNewerThanGhidraMinorVersion(String version) {
+     public static final boolean isAtLeastGhidraMinorVersion(String version) {
         String[] current = versionStrToStrList(getGhidraVersionStr());
         String[] given = versionStrToStrList(version);
         return Integer.parseInt(given[1]) >= Integer.parseInt(current[1]);
+     }
+     
+     public static final boolean isNewerThanGhidraMinorVersion(String version) {
+        return isAtLeastGhidraMinorVersion(version);
+     }
+     
+     public static final boolean isPriorToGhidraMinorVersion(String version) {
+        String[] current = versionStrToStrList(getGhidraVersionStr());
+        String[] given = versionStrToStrList(version);
+        return Integer.parseInt(given[1]) < Integer.parseInt(current[1]);
      }
      
      private static String[] versionStrToStrList(String version) {

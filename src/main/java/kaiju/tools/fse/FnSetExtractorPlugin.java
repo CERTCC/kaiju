@@ -37,7 +37,6 @@ import docking.ActionContext;
 import docking.action.DockingAction;
 import docking.action.ToolBarData;
 import ghidra.app.plugin.PluginCategoryNames;
-import ghidra.framework.main.FrontEndable;
 import ghidra.framework.model.Project;
 import ghidra.framework.plugintool.Plugin;
 import ghidra.framework.plugintool.PluginInfo;
@@ -63,7 +62,7 @@ import resources.Icons;
     description = "Compare sets of functions across programs in a project."
 )
 //@formatter:on
-public class FnSetExtractorPlugin extends Plugin implements FrontEndable, KaijuLogger {
+public class FnSetExtractorPlugin extends Plugin implements KaijuLogger {
 
     private FnSetExtractorProvider provider;
     private SwingUpdateManager reloadUpdateMgr;
