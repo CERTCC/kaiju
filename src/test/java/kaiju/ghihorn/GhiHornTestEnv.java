@@ -53,7 +53,7 @@ public class GhiHornTestEnv {
     private TestEnv env;
     private Map<String, Program> loadedTestPrograms;
     private Map<String, List<HighFunction>> loadedDecompiledPrograms;
-    private Path testFilePath;
+    private Path ghihornTestDirectory;
 
     public GhiHornTestEnv(final TestEnv e) throws IOException {
         this.env = e;
@@ -62,13 +62,18 @@ public class GhiHornTestEnv {
     }
 
     public void configure() throws Exception {
+    
+        // get the directory from the environment variable KAIJU_AUTOCATS_DIR
+        // at this point, gradle should have checked that this is a real path, so just use it
+        // TODO: is there a better way to confirm this is an AUTOCATS path first?
+        String autocatsDirString = System.getenv("KAIJU_AUTOCATS_DIR");
+        Path autocatsTopDirectory = Path.of(autocatsDirString);
+        
+        // get dir for the ghihorn-specific test files
+        ghihornTestDirectory = autocatsTopDirectory.resolve("exe/ghihorn");
 
-
-        String gtd = System.getenv(GHIHORN_TEST_DIR);
-
-        testFilePath = Path.of(gtd);
         this.project =
-                GhidraProject.createProject(testFilePath.toString(), "GhiHornTest", true);
+                GhidraProject.createProject(ghihornTestDirectory.toString(), "GhiHornTest", true);
 
     }
 
@@ -318,7 +323,7 @@ public class GhiHornTestEnv {
         if (this.loadedTestPrograms.containsKey(programName)) {
             return this.loadedTestPrograms.get(programName);
         }
-        try (Stream<Path> walk = Files.walk(Paths.get(testFilePath.resolve("").toString()))) {
+        try (Stream<Path> walk = Files.walk(Paths.get(ghihornTestDirectory.resolve("").toString()))) {
 
             Set<File> result = walk.filter(Files::isRegularFile)
                     .filter(f -> f.getFileName().toFile().getName().equals(programName))

@@ -82,6 +82,7 @@ class OOAnalyzerTest extends AbstractGhidraHeadedIntegrationTest {
 
         Msg.info (this, "We didn't crash!");
 
+        env.close (p);
         env.dispose ();
 
     }

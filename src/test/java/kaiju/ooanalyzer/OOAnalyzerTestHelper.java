@@ -66,6 +66,7 @@ class OOAnalyzerTestHelper {
         
         // WARNING: these directories are hard-coded and must be updated if changed
         jsonDirectory = ResourceManager.getResourceFile("ooanalyzer/").toPath();
+        // the exe directory should have two subdirectories to match the test/resources/ooanalyzer/ directory
         exeDirectory = autocatsTopDirectory.resolve("exe");
         testJsons =
         Files.find(jsonDirectory, 999, (p, bfa) -> p.getFileName ().toString ().endsWith (".json") && bfa.isRegularFile ())
