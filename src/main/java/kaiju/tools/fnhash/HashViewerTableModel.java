@@ -31,6 +31,8 @@
  */
 package kaiju.tools.fnhash;
 
+// for supporting different Ghidra versions
+import java.lang.reflect.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -234,8 +236,34 @@ public class HashViewerTableModel extends AddressBasedTableModel<ProgramLocation
             }
             
             if (fnhashmap != null) {
+            
+                Class<?> c = null;
+                try {
+                    c = Class.forName("ghidra.program.model.util.ObjectPropertyMap");
+                } catch (ClassNotFoundException e) {
+                    return "";
+                }
+
+                FnHashSaveable prop = null;
+                try
+                {
+                    // the get() function was introduced in Ghidra 10.2
+                    c.getDeclaredMethod("get");
+                    try {
+                        prop = (FnHashSaveable) c.getDeclaredMethod("get").invoke(rowObject.getAddress());
+                    } catch (Exception e) {
+                        return "";
+                    }
+                } catch(NoSuchMethodException e) {
+                    // before Ghidra 10.2, it was getObject()
+                    try {
+                        prop = (FnHashSaveable) c.getDeclaredMethod("getObject").invoke(rowObject.getAddress());
+                    } catch (Exception e2) {
+                        return "";
+                    }
+                }
                 
-                FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(rowObject.getAddress());
+                //FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(rowObject.getAddress());
                 if (prop == null) {
                     // TODO: hash wasn't computed for this function, why?
                     // HINT: it seems like the ones missing hashes are largely external functions,
@@ -280,8 +308,34 @@ public class HashViewerTableModel extends AddressBasedTableModel<ProgramLocation
             }
             
             if (fnhashmap != null) {
+            
+                Class<?> c = null;
+                try {
+                    c = Class.forName("ghidra.program.model.util.ObjectPropertyMap");
+                } catch (ClassNotFoundException e) {
+                    return "";
+                }
+
+                FnHashSaveable prop = null;
+                try
+                {
+                    // the get() function was introduced in Ghidra 10.2
+                    c.getDeclaredMethod("get");
+                    try {
+                        prop = (FnHashSaveable) c.getDeclaredMethod("get").invoke(rowObject.getAddress());
+                    } catch (Exception e) {
+                        return "";
+                    }
+                } catch(NoSuchMethodException e) {
+                    // before Ghidra 10.2, it was getObject()
+                    try {
+                        prop = (FnHashSaveable) c.getDeclaredMethod("getObject").invoke(rowObject.getAddress());
+                    } catch (Exception e2) {
+                        return "";
+                    }
+                }
                 
-                FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(rowObject.getAddress());
+                //FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(rowObject.getAddress());
                 if (prop == null) {
                     // TODO: hash wasn't computed for this function, why?
                     return "";
@@ -325,7 +379,33 @@ public class HashViewerTableModel extends AddressBasedTableModel<ProgramLocation
             
             if (fnhashmap != null) {
                 
-                FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(rowObject.getAddress());
+                Class<?> c = null;
+                try {
+                    c = Class.forName("ghidra.program.model.util.ObjectPropertyMap");
+                } catch (ClassNotFoundException e) {
+                    return "";
+                }
+
+                FnHashSaveable prop = null;
+                try
+                {
+                    // the get() function was introduced in Ghidra 10.2
+                    c.getDeclaredMethod("get");
+                    try {
+                        prop = (FnHashSaveable) c.getDeclaredMethod("get").invoke(rowObject.getAddress());
+                    } catch (Exception e) {
+                        return "";
+                    }
+                } catch(NoSuchMethodException e) {
+                    // before Ghidra 10.2, it was getObject()
+                    try {
+                        prop = (FnHashSaveable) c.getDeclaredMethod("getObject").invoke(rowObject.getAddress());
+                    } catch (Exception e2) {
+                        return "";
+                    }
+                }
+                
+                //FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(rowObject.getAddress());
                 if (prop == null) {
                     // TODO: hash wasn't computed for this function, why?
                     return "";
@@ -369,7 +449,33 @@ public class HashViewerTableModel extends AddressBasedTableModel<ProgramLocation
             
             if (fnhashmap != null) {
                 
-                FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(rowObject.getAddress());
+                Class<?> c = null;
+                try {
+                    c = Class.forName("ghidra.program.model.util.ObjectPropertyMap");
+                } catch (ClassNotFoundException e) {
+                    return "";
+                }
+
+                FnHashSaveable prop = null;
+                try
+                {
+                    // the get() function was introduced in Ghidra 10.2
+                    c.getDeclaredMethod("get");
+                    try {
+                        prop = (FnHashSaveable) c.getDeclaredMethod("get").invoke(rowObject.getAddress());
+                    } catch (Exception e) {
+                        return "";
+                    }
+                } catch(NoSuchMethodException e) {
+                    // before Ghidra 10.2, it was getObject()
+                    try {
+                        prop = (FnHashSaveable) c.getDeclaredMethod("getObject").invoke(rowObject.getAddress());
+                    } catch (Exception e2) {
+                        return "";
+                    }
+                }
+                
+                //FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(rowObject.getAddress());
                 if (prop == null) {
                     // TODO: hash wasn't computed for this function, why?
                     return "";
@@ -413,7 +519,33 @@ public class HashViewerTableModel extends AddressBasedTableModel<ProgramLocation
             
             if (fnhashmap != null) {
                 
-                FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(rowObject.getAddress());
+                Class<?> c = null;
+                try {
+                    c = Class.forName("ghidra.program.model.util.ObjectPropertyMap");
+                } catch (ClassNotFoundException e) {
+                    return "";
+                }
+
+                FnHashSaveable prop = null;
+                try
+                {
+                    // the get() function was introduced in Ghidra 10.2
+                    c.getDeclaredMethod("get");
+                    try {
+                        prop = (FnHashSaveable) c.getDeclaredMethod("get").invoke(rowObject.getAddress());
+                    } catch (Exception e) {
+                        return "";
+                    }
+                } catch(NoSuchMethodException e) {
+                    // before Ghidra 10.2, it was getObject()
+                    try {
+                        prop = (FnHashSaveable) c.getDeclaredMethod("getObject").invoke(rowObject.getAddress());
+                    } catch (Exception e2) {
+                        return "";
+                    }
+                }
+                
+                //FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(rowObject.getAddress());
                 if (prop == null) {
                     // TODO: hash wasn't computed for this function, why?
                     return "";
@@ -457,7 +589,33 @@ public class HashViewerTableModel extends AddressBasedTableModel<ProgramLocation
             
             if (fnhashmap != null) {
                 
-                FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(rowObject.getAddress());
+                Class<?> c = null;
+                try {
+                    c = Class.forName("ghidra.program.model.util.ObjectPropertyMap");
+                } catch (ClassNotFoundException e) {
+                    return "";
+                }
+
+                FnHashSaveable prop = null;
+                try
+                {
+                    // the get() function was introduced in Ghidra 10.2
+                    c.getDeclaredMethod("get");
+                    try {
+                        prop = (FnHashSaveable) c.getDeclaredMethod("get").invoke(rowObject.getAddress());
+                    } catch (Exception e) {
+                        return "";
+                    }
+                } catch(NoSuchMethodException e) {
+                    // before Ghidra 10.2, it was getObject()
+                    try {
+                        prop = (FnHashSaveable) c.getDeclaredMethod("getObject").invoke(rowObject.getAddress());
+                    } catch (Exception e2) {
+                        return "";
+                    }
+                }
+                
+                //FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(rowObject.getAddress());
                 if (prop == null) {
                     // TODO: hash wasn't computed for this function, why?
                     return "";
@@ -501,7 +659,33 @@ public class HashViewerTableModel extends AddressBasedTableModel<ProgramLocation
             
             if (fnhashmap != null) {
                 
-                FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(rowObject.getAddress());
+                Class<?> c = null;
+                try {
+                    c = Class.forName("ghidra.program.model.util.ObjectPropertyMap");
+                } catch (ClassNotFoundException e) {
+                    return -1;
+                }
+
+                FnHashSaveable prop = null;
+                try
+                {
+                    // the get() function was introduced in Ghidra 10.2
+                    c.getDeclaredMethod("get");
+                    try {
+                        prop = (FnHashSaveable) c.getDeclaredMethod("get").invoke(rowObject.getAddress());
+                    } catch (Exception e) {
+                        return -1;
+                    }
+                } catch(NoSuchMethodException e) {
+                    // before Ghidra 10.2, it was getObject()
+                    try {
+                        prop = (FnHashSaveable) c.getDeclaredMethod("getObject").invoke(rowObject.getAddress());
+                    } catch (Exception e2) {
+                        return -1;
+                    }
+                }
+                
+                //FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(rowObject.getAddress());
                 if (prop == null) {
                     // TODO: hash wasn't computed for this function, why?
                     return -1;
@@ -544,8 +728,34 @@ public class HashViewerTableModel extends AddressBasedTableModel<ProgramLocation
             }
             
             if (fnhashmap != null) {
+            
+                Class<?> c = null;
+                try {
+                    c = Class.forName("ghidra.program.model.util.ObjectPropertyMap");
+                } catch (ClassNotFoundException e) {
+                    return -1;
+                }
+
+                FnHashSaveable prop = null;
+                try
+                {
+                    // the get() function was introduced in Ghidra 10.2
+                    c.getDeclaredMethod("get");
+                    try {
+                        prop = (FnHashSaveable) c.getDeclaredMethod("get").invoke(rowObject.getAddress());
+                    } catch (Exception e) {
+                        return -1;
+                    }
+                } catch(NoSuchMethodException e) {
+                    // before Ghidra 10.2, it was getObject()
+                    try {
+                        prop = (FnHashSaveable) c.getDeclaredMethod("getObject").invoke(rowObject.getAddress());
+                    } catch (Exception e2) {
+                        return -1;
+                    }
+                }
                 
-                FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(rowObject.getAddress());
+                //FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(rowObject.getAddress());
                 if (prop == null) {
                     // TODO: hash wasn't computed for this function, why?
                     return -1;
@@ -589,7 +799,33 @@ public class HashViewerTableModel extends AddressBasedTableModel<ProgramLocation
             
             if (fnhashmap != null) {
                 
-                FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(rowObject.getAddress());
+                Class<?> c = null;
+                try {
+                    c = Class.forName("ghidra.program.model.util.ObjectPropertyMap");
+                } catch (ClassNotFoundException e) {
+                    return -1;
+                }
+
+                FnHashSaveable prop = null;
+                try
+                {
+                    // the get() function was introduced in Ghidra 10.2
+                    c.getDeclaredMethod("get");
+                    try {
+                        prop = (FnHashSaveable) c.getDeclaredMethod("get").invoke(rowObject.getAddress());
+                    } catch (Exception e) {
+                        return -1;
+                    }
+                } catch(NoSuchMethodException e) {
+                    // before Ghidra 10.2, it was getObject()
+                    try {
+                        prop = (FnHashSaveable) c.getDeclaredMethod("getObject").invoke(rowObject.getAddress());
+                    } catch (Exception e2) {
+                        return -1;
+                    }
+                }
+                
+                //FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(rowObject.getAddress());
                 if (prop == null) {
                     // TODO: hash wasn't computed for this function, why?
                     return -1;
@@ -633,7 +869,33 @@ public class HashViewerTableModel extends AddressBasedTableModel<ProgramLocation
             
             if (fnhashmap != null) {
                 
-                FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(rowObject.getAddress());
+                Class<?> c = null;
+                try {
+                    c = Class.forName("ghidra.program.model.util.ObjectPropertyMap");
+                } catch (ClassNotFoundException e) {
+                    return null;
+                }
+
+                FnHashSaveable prop = null;
+                try
+                {
+                    // the get() function was introduced in Ghidra 10.2
+                    c.getDeclaredMethod("get");
+                    try {
+                        prop = (FnHashSaveable) c.getDeclaredMethod("get").invoke(rowObject.getAddress());
+                    } catch (Exception e) {
+                        return null;
+                    }
+                } catch(NoSuchMethodException e) {
+                    // before Ghidra 10.2, it was getObject()
+                    try {
+                        prop = (FnHashSaveable) c.getDeclaredMethod("getObject").invoke(rowObject.getAddress());
+                    } catch (Exception e2) {
+                        return null;
+                    }
+                }
+                
+                //FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(rowObject.getAddress());
                 if (prop == null) {
                     // TODO: hash wasn't computed for this function, why?
                     return null;
@@ -677,7 +939,33 @@ public class HashViewerTableModel extends AddressBasedTableModel<ProgramLocation
             
             if (fnhashmap != null) {
                 
-                FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(rowObject.getAddress());
+                Class<?> c = null;
+                try {
+                    c = Class.forName("ghidra.program.model.util.ObjectPropertyMap");
+                } catch (ClassNotFoundException e) {
+                    return "";
+                }
+
+                FnHashSaveable prop = null;
+                try
+                {
+                    // the get() function was introduced in Ghidra 10.2
+                    c.getDeclaredMethod("get");
+                    try {
+                        prop = (FnHashSaveable) c.getDeclaredMethod("get").invoke(rowObject.getAddress());
+                    } catch (Exception e) {
+                        return "";
+                    }
+                } catch(NoSuchMethodException e) {
+                    // before Ghidra 10.2, it was getObject()
+                    try {
+                        prop = (FnHashSaveable) c.getDeclaredMethod("getObject").invoke(rowObject.getAddress());
+                    } catch (Exception e2) {
+                        return "";
+                    }
+                }
+                
+                //FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(rowObject.getAddress());
                 if (prop == null) {
                     // TODO: hash wasn't computed for this function, why?
                     return null;
@@ -721,7 +1009,33 @@ public class HashViewerTableModel extends AddressBasedTableModel<ProgramLocation
             
             if (fnhashmap != null) {
                 
-                FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(rowObject.getAddress());
+                Class<?> c = null;
+                try {
+                    c = Class.forName("ghidra.program.model.util.ObjectPropertyMap");
+                } catch (ClassNotFoundException e) {
+                    return "";
+                }
+
+                FnHashSaveable prop = null;
+                try
+                {
+                    // the get() function was introduced in Ghidra 10.2
+                    c.getDeclaredMethod("get");
+                    try {
+                        prop = (FnHashSaveable) c.getDeclaredMethod("get").invoke(rowObject.getAddress());
+                    } catch (Exception e) {
+                        return "";
+                    }
+                } catch(NoSuchMethodException e) {
+                    // before Ghidra 10.2, it was getObject()
+                    try {
+                        prop = (FnHashSaveable) c.getDeclaredMethod("getObject").invoke(rowObject.getAddress());
+                    } catch (Exception e2) {
+                        return "";
+                    }
+                }
+                
+                //FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(rowObject.getAddress());
                 if (prop == null) {
                     // TODO: hash wasn't computed for this function, why?
                     return null;

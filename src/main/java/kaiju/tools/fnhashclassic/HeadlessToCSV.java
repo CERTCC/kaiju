@@ -62,7 +62,36 @@ public final class HeadlessToCSV {
 
         while(addriter.hasNext()){
             Address fn_addr = addriter.next();
-            FnHashSaveable fnhash = (FnHashSaveable) fnhashobjmap.getObject(fn_addr);
+            
+            FnHashSaveable fnhash = null;
+            Class<?> c = null;
+            try {
+                c = Class.forName("ghidra.program.model.util.ObjectPropertyMap");
+            } catch (ClassNotFoundException e) {
+                //TODO
+                return;
+            }
+
+            try
+            {
+                // the get() function was introduced in Ghidra 10.2
+                c.getDeclaredMethod("get");
+                try {
+                    fnhash = (FnHashSaveable) c.getDeclaredMethod("get").invoke(fn_addr);
+                } catch (Exception e) {
+                    //TODO
+                    return;
+                }
+            } catch(NoSuchMethodException e) {
+                // before Ghidra 10.2, it was getObject()
+                try {
+                    fnhash = (FnHashSaveable) c.getDeclaredMethod("getObject").invoke(fn_addr);
+                } catch (Exception e2) {
+                    //TODO
+                    return;
+                }
+            }
+            //FnHashSaveable fnhash = (FnHashSaveable) fnhashobjmap.getObject(fn_addr);
             
 
             /*

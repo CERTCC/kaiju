@@ -180,7 +180,37 @@ public class FnSetExtractor implements KaijuLogger {
                 }
                 
                 if (fnhashmap != null) {
-                    FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(function.getEntryPoint());
+                
+                    FnHashSaveable prop = null;
+                    Class<?> c = null;
+                    try {
+                        c = Class.forName("ghidra.program.model.util.ObjectPropertyMap");
+                    } catch (ClassNotFoundException e) {
+                        //TODO
+                        return;
+                    }
+
+                    try
+                    {
+                        // the get() function was introduced in Ghidra 10.2
+                        c.getDeclaredMethod("get");
+                        try {
+                            prop = (FnHashSaveable) c.getDeclaredMethod("get").invoke(function.getEntryPoint());
+                        } catch (Exception e) {
+                            //TODO
+                            return;
+                        }
+                    } catch(NoSuchMethodException e) {
+                        // before Ghidra 10.2, it was getObject()
+                        try {
+                            prop = (FnHashSaveable) c.getDeclaredMethod("getObject").invoke(function.getEntryPoint());
+                        } catch (Exception e2) {
+                            //TODO
+                            return;
+                        }
+                    }
+                    //FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(function.getEntryPoint());
+                    
                     if (prop != null) {
                         // TODO: make it configurable which type of hash to use here
                         String fnhash = prop.getPICHash();

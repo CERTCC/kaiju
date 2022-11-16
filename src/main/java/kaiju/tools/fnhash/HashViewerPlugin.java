@@ -101,6 +101,7 @@ public class HashViewerPlugin extends ProgramPlugin implements DomainObjectListe
     private static final String LAST_EXPORT_FILE = "LAST_EXPORT_DIR";
 
     public HashViewerPlugin(PluginTool tool) {
+        //TODO: this api is marked deprecated in ghidra 10.2
         super(tool, false, false);
     }
 

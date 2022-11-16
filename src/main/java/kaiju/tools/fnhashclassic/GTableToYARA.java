@@ -181,7 +181,36 @@ public final class GTableToYARA {
             Program current_program = table.getProgram();
             PropertyMapManager man = current_program.getUsrPropertyManager();
             ObjectPropertyMap fnhashmap = man.getObjectPropertyMap("__CERT_Kaiju_FnHash");
-            FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(row_addr);
+            
+            FnHashSaveable prop = null;
+            Class<?> c = null;
+            try {
+                c = Class.forName("ghidra.program.model.util.ObjectPropertyMap");
+            } catch (ClassNotFoundException e) {
+                //TODO
+                return;
+            }
+
+            try
+            {
+                // the get() function was introduced in Ghidra 10.2
+                c.getDeclaredMethod("get");
+                try {
+                    prop = (FnHashSaveable) c.getDeclaredMethod("get").invoke(row_addr);
+                } catch (Exception e) {
+                    //TODO
+                    return;
+                }
+            } catch(NoSuchMethodException e) {
+                // before Ghidra 10.2, it was getObject()
+                try {
+                    prop = (FnHashSaveable) c.getDeclaredMethod("getObject").invoke(row_addr);
+                } catch (Exception e2) {
+                    //TODO
+                    return;
+                }
+            }
+            //FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(row_addr);
             
             String filename_value = current_program.getExecutablePath();
             
