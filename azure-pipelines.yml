@@ -58,13 +58,13 @@ jobs:
       echo "##vso[task.setvariable variable=JAVA_HOME]$(JAVA_HOME_11_X64)"
       echo "##vso[task.prependpath]$(JAVA_HOME_11_X64)/bin:$(PATH)"
     displayName: "Set Java 11"
-    condition: ne(variables['ghidraUrl'], '')
+    condition: or(eq(variables['ghidraVersion'], '10.1.5'), or(eq(variables['ghidraVersion'], '10.1.4'), or(eq(variables['ghidraVersion'], '10.1.3'), eq(variables['ghidraVersion'], '10.1.2'))))
     
   - script: |
       echo "##vso[task.setvariable variable=JAVA_HOME]$(JAVA_HOME_17_X64)"
       echo "##vso[task.prependpath]$(JAVA_HOME_17_X64)/bin:$(PATH)"
     displayName: "Set Java 17"
-    condition: eq(variables['ghidraUrl'], '')
+    condition: or(eq(variables['ghidraVersion'], 'master'), eq(variables['ghidraVersion'], '10.2.2'))
 
   - task: Cache@2
     inputs:
