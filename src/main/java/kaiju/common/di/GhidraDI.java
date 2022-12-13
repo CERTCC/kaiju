@@ -33,38 +33,113 @@ package kaiju.common.di;
 
 import ghidra.framework.Application;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GhidraDI {
     
-    /**
+   /**
      * Returns the version of the Ghidra being run.
      * This is the version check GhidraScript uses,
      * duplicated here
      * @return the version of the Ghidra being run,
      *         in the format: "x.y.z".
      */
-     public static final String getGhidraVersionStr() {
-        //TODO: what if version is e.g. 10.2, no "z"? can we auto-add 0?
-        return Application.getApplicationVersion();
-     }
+   public static final String getGhidraVersionStr() {
+      //TODO: what if version is e.g. 10.2, no "z"? can we auto-add 0?
+      return Application.getApplicationVersion();
+   }
      
-     public static final boolean isAtLeastGhidraMinorVersion(String version) {
-        String[] current = versionStrToStrList(getGhidraVersionStr());
-        String[] given = versionStrToStrList(version);
-        return Integer.parseInt(given[1]) >= Integer.parseInt(current[1]);
-     }
+   public static final boolean isAtLeastGhidraMinorVersion(String version) {
+      Integer[] current = versionStrToIntList(getGhidraVersionStr());
+      Integer[] given = versionStrToIntList(version);
+      return compareGhidraVersions(current, given, "minor") >= 0;
+   }
      
-     public static final boolean isNewerThanGhidraMinorVersion(String version) {
-        return isAtLeastGhidraMinorVersion(version);
-     }
+   public static final boolean isNewerThanGhidraMinorVersion(String version) {
+      return isAtLeastGhidraMinorVersion(version);
+   }
      
-     public static final boolean isPriorToGhidraMinorVersion(String version) {
-        String[] current = versionStrToStrList(getGhidraVersionStr());
-        String[] given = versionStrToStrList(version);
-        return Integer.parseInt(given[1]) < Integer.parseInt(current[1]);
-     }
+   public static final boolean isPriorToGhidraMinorVersion(String version) {
+      String ghidra = getGhidraVersionStr();
+      Integer[] current = versionStrToIntList(ghidra);
+      Integer[] given = versionStrToIntList(version);
+      return compareGhidraVersions(current, given, "minor") < 0;
+   }
+   
+   public static final int compareGhidraVersions(Integer[] one, Integer[] two, String digit) {
+      // we assume both one and two are Integer[3] arrays
+      int comparison = 0;
+      // first test the major versions, return if that's all we needed
+      if (one[0] > two[0]) {
+         comparison = 1;
+      } else if (one[0] == two[0]) {
+         comparison = 0;
+      } else {
+         // less than
+         comparison = -1;
+      }
+      // next test minor versions, but only if major versions is greater than or equal
+      if (digit.equals("minor") || digit.equals("bugfix")) {
+         if (comparison >= 0) {
+            if (one[1] > two[1]) {
+               comparison = 1;
+            } else if (one[1] == two[1]) {
+               comparison = 0;
+            } else {
+               // less than
+               comparison = -1;
+            }
+         }
+         
+         // if we're testing bugfixes, check it now
+         if (digit.equals("bugfix")) {
+            if (comparison >= 0) {
+               if (one[2] > two[2]) {
+                  comparison = 1;
+               } else if (one[2] == two[2]) {
+                  comparison = 0;
+               } else {
+                  // less than
+                  comparison = -1;
+               }
+            }
+         }
+      }
+      return comparison;
+   }
      
-     private static String[] versionStrToStrList(String version) {
-        return version.split(".", 3);
-     }
+   /**
+     * Returns the version of the Ghidra being run as a list of Strings.
+     * @return the version of the Ghidra being run,
+     *         in the format: ["x", "y", "z"].
+     */
+   public static final String[] versionStrToStrList(String version) {
+      // escape the period or it will be treated as a regex wildcard!
+      String[] ver = version.split("\\.", 3);
+      // we may not have ended up with three number if the version is e.g. "10.2",
+      // TODO: is it ok to assume the bugfix is 0 if we only have two items in the array?
+      if (ver.length == 2) {
+         // try to split it again after adding to the version string!
+         ver = (version + ".0").split("\\.", 3);
+      }
+      return ver;
+   }
+     
+   /**
+     * Returns the version of the Ghidra being run as a list of Integers.
+     * @return the version of the Ghidra being run,
+     *         in the format: ["x", "y", "z"].
+     */
+   public static final Integer[] versionStrToIntList(String version) {
+      String[] verlist = versionStrToStrList(version);
+      List<Integer> verintlist = new ArrayList<Integer>();
+      for (String a : verlist) {
+         verintlist.add(Integer.parseInt(a));
+      };
+      // this is weird syntax to say:
+      // convert to array with typing of an array of Integer
+      return verintlist.toArray(new Integer[3]);
+   }
 
 }
