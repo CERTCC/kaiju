@@ -32,6 +32,8 @@
 
 package kaiju.ooanalyzer;
 
+import ghidra.test.AbstractGhidraHeadedIntegrationTest;
+import ghidra.test.TestEnv;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -46,7 +48,7 @@ import resources.ResourceManager;
 // For some reason, gradle can't find JUnit tests in a class that extends
 // AbstractGhidraHeadedIntegrationTest.  So we'll make the JUnit tests in this class and call
 // OOAnalyzerTest
-class OOAnalyzerTestHelper {
+public class OOAnalyzerTestHelper {
 
     final private String testNameSeparator = "_";
 

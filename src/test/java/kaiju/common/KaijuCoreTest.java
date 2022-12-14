@@ -38,10 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -49,27 +46,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
+import generic.test.AbstractGenericTest;
 import ghidra.test.AbstractGhidraHeadlessIntegrationTest;
 import ghidra.test.TestEnv;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class KaijuCoreTest extends AbstractGhidraHeadlessIntegrationTest {
-    
-    //private TestEnv env;
+class KaijuCoreTest extends AbstractGenericTest {
     
     KaijuCoreTest () throws Exception {
-    }
-    
-    @AfterAll
-    public void afterAll() {
-        //env.dispose();
-    }
-
-    @BeforeAll
-    public void beforeAll() throws IOException {
-        //env = new TestEnv();
-        //setErrorGUIEnabled(false);
     }
     
     @Nested

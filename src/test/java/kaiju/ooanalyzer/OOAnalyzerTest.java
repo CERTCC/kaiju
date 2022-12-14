@@ -40,6 +40,7 @@ import ghidra.program.util.GhidraProgramUtilities;
 import ghidra.test.AbstractGhidraHeadedIntegrationTest;
 import ghidra.test.TestEnv;
 import ghidra.util.Msg;
+import kaiju.common.di.GhidraDI;
 import kaiju.tools.ooanalyzer.OOAnalyzerGhidraPlugin;
 
 class OOAnalyzerTest extends AbstractGhidraHeadedIntegrationTest {
@@ -83,6 +84,7 @@ class OOAnalyzerTest extends AbstractGhidraHeadedIntegrationTest {
         Msg.info (this, "We didn't crash!");
 
         env.close (p);
+        
         env.dispose ();
 
     }
