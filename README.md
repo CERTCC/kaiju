@@ -44,7 +44,7 @@ CERT Kaiju requires the following runtime dependencies:
 - Java 11+ (we recommend [OpenJDK 11](https://openjdk.java.net/install/))
 - [Z3](https://github.com/Z3Prover/z3) including Z3 Java bindings .jar
 
-**NOTE**: We strongly recommend updating to Ghidra 10.1 or above
+**NOTE**: We strongly recommend updating to Ghidra 10.1.2 or above
 in order to address the log4j vulnerability that exists
 in the library bundled with older versions of Ghidra.
 

@@ -19,11 +19,18 @@ jobs:
     Z3_VERSION: z3-4.8.14
   strategy:
     matrix:
-      ghidra-git:
-        ghidraVersion: "master"
+      # disabled until make needed changes for Ghidra 10.3
+      #ghidra-git:
+      #  ghidraVersion: "master"
       ghidra1022:
         ghidraUrl: "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_10.2.2_build/ghidra_10.2.2_PUBLIC_20221115.zip"
         ghidraVersion: "10.2.2"
+      ghidra1021:
+        ghidraUrl: "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_10.2.1_build/ghidra_10.2.1_PUBLIC_20221110.zip"
+        ghidraVersion: "10.2.1"
+      ghidra1020:
+        ghidraUrl: "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_10.2_build/ghidra_10.2_PUBLIC_20221101.zip"
+        ghidraVersion: "10.2.0"
       ghidra1015:
         ghidraUrl: "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_10.1.5_build/ghidra_10.1.5_PUBLIC_20220726.zip"
         ghidraVersion: "10.1.5"
@@ -64,7 +71,7 @@ jobs:
       echo "##vso[task.setvariable variable=JAVA_HOME]$(JAVA_HOME_17_X64)"
       echo "##vso[task.prependpath]$(JAVA_HOME_17_X64)/bin:$(PATH)"
     displayName: "Set Java 17"
-    condition: or(eq(variables['ghidraVersion'], 'master'), eq(variables['ghidraVersion'], '10.2.2'))
+    condition: or(eq(variables['ghidraVersion'], 'master'), or(eq(variables['ghidraVersion'], '10.2.2'), or(eq(variables['ghidraVersion'], '10.2.1'), eq(variables['ghidraVersion'], '10.2.0'))))
 
   - task: Cache@2
     inputs:
