@@ -183,7 +183,7 @@ jobs:
   - script: gradle --stop
   - publish: dist/
   - task: GitHubRelease@0
-    condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'main'))
+    condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'main'), ne(variables['Build.Reason'], 'Schedule'))
     inputs:
       gitHubConnection: gh
       repositoryName: $(Build.Repository.Name)
@@ -192,7 +192,7 @@ jobs:
       tag: ghidra-$(ghidraVersion)
     continueOnError: true
   - task: DownloadSecureFile@1
-    condition: eq(variables['Build.SourceBranchName'], 'main')
+    condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'main'), ne(variables['Build.Reason'], 'Schedule'))
     name: deployKey
     inputs:
       secureFile: 'deploy.key'
@@ -207,13 +207,13 @@ jobs:
       git remote add ssh-origin git@github.com:sei-eschwartz/kaiju.git
       git push --delete ssh-origin ghidra-$(ghidraVersion)
       rm -f $(deployKey.secureFilePath)
-    condition: eq(variables['Build.SourceBranchName'], 'main')
+    condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'main'), ne(variables['Build.Reason'], 'Schedule'))
     env:
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
     continueOnError: true
     displayName: Delete old git tag ghidra-$(ghidraVersion)
   - task: GitHubRelease@0
-    condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'main'))
+    condition: and(succeeded(), eq(variables['Build.SourceBranchName'], 'main'), ne(variables['Build.Reason'], 'Schedule'))
     inputs:
       gitHubConnection: gh
       repositoryName: $(Build.Repository.Name)
