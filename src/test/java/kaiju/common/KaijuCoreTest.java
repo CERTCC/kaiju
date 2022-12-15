@@ -52,41 +52,41 @@ import generic.test.AbstractGenericTest;
 import ghidra.test.AbstractGhidraHeadlessIntegrationTest;
 import ghidra.test.TestEnv;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+//@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class KaijuCoreTest extends AbstractGenericTest {
     
     KaijuCoreTest () throws Exception {
     }
     
-    @Nested
-    @DisplayName("Ghidra DI tests")
-    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    //@Nested
+    //@DisplayName("Ghidra DI tests")
+    //@TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class DITests {
     
-        @Test
+        //@Test
         public void testGhidraVersionNotEmptyString() {
             assertTrue(GhidraDI.getGhidraVersionStr() != "");
         }
         
-        @Test
+        //@Test
         public void testGhidraVersionIsIntegerVersionArray() {
             Integer[] ver = GhidraDI.versionStrToIntList(GhidraDI.getGhidraVersionStr());
             assertTrue(ver.length == 3);
         }
         
-        @Test
+        //@Test
         public void testGhidraVersionStringToStringArray() {
             String[] expected = {"10", "1", "2"};
             assertArrayEquals(expected, GhidraDI.versionStrToStrList("10.1.2"));
         }
         
-        @Test
+        //@Test
         public void testGhidraVersionStringToIntegerArray() {
             Integer[] expected = {10, 1, 2};
             assertArrayEquals(expected, GhidraDI.versionStrToIntList("10.1.2"));
         }
         
-        @Test
+        //@Test
         public void testGhidraMinorVersionStringToStringArray() {
             // on brand new minor releases, Ghidra seems to only use two digits, e.g., "10.2",
             // so check that we're adding a "0" to the third spot in the array
@@ -94,7 +94,7 @@ class KaijuCoreTest extends AbstractGenericTest {
             assertArrayEquals(expected, GhidraDI.versionStrToStrList("10.2"));
         }
         
-        @Test
+        //@Test
         public void testAtLeastGivenMinorGhidraVersion() {
             Integer[] expected = {10, 1, 2};
             // should pass if same

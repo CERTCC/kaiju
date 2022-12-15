@@ -54,9 +54,7 @@ plugins {
     id 'kaiju.gradle.ghidrahtml'
 }
 
-// we target Java 11 LTS as recommended by Ghidra
-sourceCompatibility = 1.11
-targetCompatibility = 1.11
+
 
 //----------------------START "DO NOT MODIFY" SECTION------------------------------
 def ghidraInstallDir
@@ -76,6 +74,25 @@ else {
 }
 //----------------------END "DO NOT MODIFY" SECTION-------------------------------
 
+def ghidraVersion;
+def minor;
+String[] str;
+str = ghidraInstallDir.split('_');
+for( String values : str )
+if (values =~ '[0-9]{1,}\\.[0-9]{1,}\\.[0-9]{1,}') {
+    ghidraVersion = values;
+    String[] substr = values.split('\\.');
+    minor = substr[1] as int;
+};
+if (minor && minor < 2) {
+    // we target Java 11 LTS for old Ghidra
+    sourceCompatibility = 1.11
+    targetCompatibility = 1.11
+} else {
+    // we target Java 17 LTS for Ghidra 10.2+
+    sourceCompatibility = 1.17
+    targetCompatibility = 1.17
+}
 
 // allow installation using:
 // > gradle -PGHIDRA_INSTALL_DIR=/path/to/ghidra install
@@ -141,7 +158,8 @@ buildExtension {
 
 task printGhidraDir {
     println 'Using Ghidra install directory ' + ghidraInstallDir
-    println 'Using test directory ' + project.property('KAIJU_AUTOCATS_DIR')
+    println 'Using Java ' + targetCompatibility + ' for Ghidra ' + ghidraVersion
+    println 'Using AUTOCATS test directory ' + project.property('KAIJU_AUTOCATS_DIR')
 }
 
 task copyToLib(type: Copy) {
