@@ -13,7 +13,7 @@ jobs:
     GRADLE_USER_HOME: $(Pipeline.Workspace)/.gradle
     AUTOCATS_DIR: $(Pipeline.Workspace)/autocats
     GHIHORN_TEST_DIR: $(Pipeline.Workspace)/autocats/exe/ghihorn
-    GRADLE_VERSION: gradle-7.5.1
+    GRADLE_VERSION: gradle-7.6
     GRADLE_URL: https://services.gradle.org/distributions/$(GRADLE_VERSION)-bin.zip
     GRADLE_INSTALL_DIR: $(Pipeline.Workspace)/gradle
     Z3_VERSION: z3-4.8.14
@@ -44,7 +44,7 @@ jobs:
         ghidraUrl: "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_10.1.2_build/ghidra_10.1.2_PUBLIC_20220125.zip"
         ghidraVersion: "10.1.2"
   pool:
-    vmImage: 'Ubuntu-20.04'
+    vmImage: 'Ubuntu-22.04'
   steps:
 
   - bash: |
