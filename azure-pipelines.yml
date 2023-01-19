@@ -16,7 +16,7 @@ jobs:
     GRADLE_VERSION: gradle-7.6
     GRADLE_URL: https://services.gradle.org/distributions/$(GRADLE_VERSION)-bin.zip
     GRADLE_INSTALL_DIR: $(Pipeline.Workspace)/gradle
-    Z3_VERSION: z3-4.8.14
+    Z3_VERSION: z3-4.12.0
   strategy:
     matrix:
       # disabled until make needed changes for Ghidra 10.3
