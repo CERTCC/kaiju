@@ -110,12 +110,11 @@ jobs:
       set -ex
       sudo apt-get -y install ninja-build
       test -d $(Pipeline.Workspace)/z3 || git clone -b $(Z3_VERSION) --depth 1 https://github.com/Z3Prover/z3.git z3
+      rmdir -r z3/build
       mkdir -p z3/build
       cd z3/build
       git checkout $(Z3_VERSION)
       cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DZ3_BUILD_JAVA_BINDINGS=On ..
-      find .. -name '*.class' | xargs rm || true
-      ninja clean
       ninja
       echo '##vso[task.setvariable variable=LD_LIBRARY_PATH]$(Pipeline.Workspace)/z3/build'
     condition: succeeded()
