@@ -110,7 +110,7 @@ jobs:
       set -ex
       sudo apt-get -y install ninja-build
       test -d $(Pipeline.Workspace)/z3 || git clone -b $(Z3_VERSION) --depth 1 https://github.com/Z3Prover/z3.git z3
-      rmdir -r z3/build
+      rm -r z3/build
       mkdir -p z3/build
       cd z3/build
       git checkout $(Z3_VERSION)
