@@ -31,7 +31,7 @@ jobs:
       with:
         repository: "NationalSecurityAgency/ghidra"
         tag: "Ghidra_${{ matrix.ghidra_version }}_build"
-        fileName: "Ghidra*.zip"
+        fileName: "ghidra*.zip"
     - name: Unzip Ghidra ${{ matrix.ghidra_version }}
       run: 7z x ghidra_${{ matrix.ghidra_version }}_*.zip
     - name: Build with Gradle
@@ -41,6 +41,3 @@ jobs:
       with:
         gradle-version: '7.6'
         arguments: test
-
-
-    
