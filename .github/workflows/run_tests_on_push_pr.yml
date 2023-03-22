@@ -14,9 +14,11 @@ permissions:
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        ghidra_version: [10.2.3, 10.2.2]
+    runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 17
@@ -24,7 +26,19 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
+    - name: Set up Ghidra ${{ matrix.ghidra_version }}
+      uses: robinraju/release-downloader@v1.7
+      with:
+        repository: "NationalSecurityAgency/ghidra"
+        tag: "Ghidra_${{ matrix.ghidra_version }}_build"
+        fileName: "Ghidra*.zip"
     - name: Build with Gradle
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+      env:
+        GHIDRA_INSTALL_DIR: 'ghidra_${{ matrix.ghidra_version }}_PUBLIC/'
       with:
+        gradle-version: '7.6'
         arguments: test
+
+
+    
