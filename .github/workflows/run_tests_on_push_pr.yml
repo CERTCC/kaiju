@@ -33,7 +33,7 @@ jobs:
         tag: "Ghidra_${{ matrix.ghidra_version }}_build"
         fileName: "Ghidra*.zip"
     - name: Unzip Ghidra ${{ matrix.ghidra_version }}
-      run: 7z x Ghidra_${{ matrix.ghidra_version }}_*.zip
+      run: 7z x ghidra_${{ matrix.ghidra_version }}_*.zip
     - name: Build with Gradle
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
       env:
