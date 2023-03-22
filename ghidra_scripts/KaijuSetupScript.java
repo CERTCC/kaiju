@@ -38,16 +38,15 @@ import ghidra.app.script.GhidraScript;
 
 import java.util.Map;
 
+import kaiju.tools.fnhash.FnHashOptions;
+
 public class KaijuSetupScript extends GhidraScript {
-	//enable CERT Function Hashing
-
-	private static final String CERT_FNHASH_ANALYZER = "CERT Function Hashing";
-
+	//enable CERT Function Hashing if installed
 	@Override
 	protected void run() throws Exception {
 		Map<String, String> options = getCurrentAnalysisOptionsAndValues(currentProgram);
-		if (options.containsKey(CERT_FNHASH_ANALYZER)) {
-			setAnalysisOption(currentProgram, CERT_FNHASH_ANALYZER, "true");
+		if (options.containsKey(FnHashOptions.NAME)) {
+			setAnalysisOption(currentProgram, FnHashOptions.NAME, "true");
         }
 	}
 }

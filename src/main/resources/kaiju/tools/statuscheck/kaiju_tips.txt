@@ -1,0 +1,11 @@
+Kaiju includes several different tools for binary analysis. You can learn more about the Kaiju tools in the "Help > Contents" menu item under the "CERT Kaiju" section.
+
+Ghihorn analyzes logic branch paths in programs. This analysis requires the use of Z3, a logic solver. Ensure Z3 is installed or the tool won't be able to run! (Pre-compiled libraries are included with this extension.)
+
+Fn2Hash computes several different types of cryptographic hashes based on the assembly code representing functions within the program. Storing these hashes allows you to compare hashes between programs and quickly determine if two different program samples might have the same functions with the same implementations, or where they differ.
+
+Fn2Hash can export YARA signatures for functions based on the position independent code (PIC) hash, to help detect programs with certain code functionality. Select the functions you wish to export, right click, and select "Export to YARA", or click the Export to YARA button at the top of the viewer pane.
+
+Did you know that you can run Kaiju from the command line without invoking the user interface? You can learn more about the Kaiju tools in the "Help > Contents" menu item under the "CERT Kaiju" section.
+
+This is the last Kaiju tip.  You can turn them off now if Z3 is working. You can always use this Status Check tool from the Kaiju menu if you need to check if Z3 is still detected if you need to troubleshoot any issues.

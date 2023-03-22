@@ -9,8 +9,10 @@ import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.NoClassDefFoundError;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -46,6 +48,7 @@ import docking.widgets.OkDialog;
 import docking.widgets.combobox.GhidraComboBox;
 import docking.widgets.filechooser.GhidraFileChooser;
 import docking.widgets.filechooser.GhidraFileChooserMode;
+import generic.jar.GClassLoader;
 import generic.jar.ResourceFile;
 import ghidra.app.context.ProgramActionContext;
 import ghidra.app.events.ProgramHighlightPluginEvent;
@@ -62,6 +65,7 @@ import ghidra.app.util.HighlightProvider;
 import ghidra.framework.Application;
 import ghidra.framework.plugintool.ComponentProviderAdapter;
 import ghidra.framework.plugintool.PluginTool;
+import ghidra.framework.Platform;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressFormatException;
 import ghidra.program.model.address.AddressSet;
@@ -73,6 +77,7 @@ import ghidra.program.util.ProgramSelection;
 import ghidra.util.SystemUtilities;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
+import kaiju.common.*;
 import kaiju.tools.ghihorn.answer.GhiHornAnswerAttributes;
 import kaiju.tools.ghihorn.answer.format.GhiHornDisplaySettingBuilder;
 import kaiju.tools.ghihorn.answer.format.GhiHornDisplaySettings;
@@ -92,6 +97,8 @@ import kaiju.tools.ghihorn.z3.GhiHornZ3Parameters;
  */
 public class GhiHornProvider extends ComponentProviderAdapter implements Navigatable {
 
+    private static boolean z3LibsFound;
+
     private final GhiHornPlugin plugin;
     private final DateTimeFormatter dateFormatter;
     private final GhiHornZ3Parameters z3Params;
@@ -105,7 +112,6 @@ public class GhiHornProvider extends ComponentProviderAdapter implements Navigat
             hideExternalFuncsCheckbox;
     private List<GhiHornController> controllers;
     private Instant startInstant;
-    private boolean z3LibsFound;
 
     // Utility class to detect changes to settings
     private class DisplaySettingsListener implements DocumentListener {
@@ -312,8 +318,12 @@ public class GhiHornProvider extends ComponentProviderAdapter implements Navigat
         try {
             z3VerLabel.setText("Z3 version: " + Version.getFullVersion());
             z3LibsFound = true;
+        } catch (NoClassDefFoundError nce) {
+            // this happens when java can't find the libraries
+            z3VerLabel.setText("Warning: NoClassDefFoundError while loading Z3, GhiHorn will not run.");
         } catch (UnsatisfiedLinkError e) {
-            z3VerLabel.setText("Warning: Z3 libraries not found, GhiHorn will not run");
+            z3VerLabel.setText("Warning: Z3 libraries not loaded, GhiHorn will not run.");
+            // TODO: Java didn't automatically find the libraries.
         }
 
         JPanel statusPanel = new JPanel(new GridLayout(3, 1));
@@ -671,6 +681,13 @@ public class GhiHornProvider extends ComponentProviderAdapter implements Navigat
      */
     public synchronized void endAnalysis(boolean isCancelled) {
 
+        // GitHub bug #34, startInstant sometimes null?
+        // TODO: do simple check, is there a better fix?
+        // this wouldn't show proper duration if it was null
+        if (startInstant == null) {
+            startInstant = Instant.now();
+        }
+    
         long duration = Duration.between(startInstant, Instant.now()).toMillis();
         String durStr = DurationFormatUtils.formatDuration(duration, "HH'hrs' mm'mins' ss'sec'");
 

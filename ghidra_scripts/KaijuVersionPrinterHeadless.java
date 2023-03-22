@@ -37,7 +37,7 @@ public class KaijuVersionPrinterHeadless extends GhidraScript {
     @Override
     protected void run() throws Exception {
         print("Printing version information...");
-        print("CERT Kaiju 220519");
+        print("CERT Kaiju 230220");
         print("Using Ghidra " + GhidraDI.getGhidraVersionStr());
         print("Finished.");
     }

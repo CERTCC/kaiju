@@ -30,6 +30,7 @@
  * DM21-0792
  */
 import java.io.File;
+import java.io.StringWriter;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -74,7 +75,51 @@ public class KaijuExportYaraHeadless extends GhidraScript {
         while(addriter.hasNext()){
             Address fn_addr = addriter.next();
             
-            FnHashSaveable prop = (FnHashSaveable) fnhashobjmap.getObject(fn_addr);
+            Class<?> c = null;
+            try {
+                c = Class.forName("ghidra.program.model.util.ObjectPropertyMap");
+            } catch (ClassNotFoundException e) {
+                // TODO
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                String sStackTrace = sw.toString(); // stack trace as a string
+                print(sStackTrace);
+                return;
+            }
+
+            FnHashSaveable prop = null;
+            try
+            {
+                // the get() function was introduced in Ghidra 10.2
+                fnhashobjmap.getClass().getDeclaredMethod("get", Address.class);
+                try {
+                    prop = (FnHashSaveable) fnhashobjmap.getClass().getDeclaredMethod("get", Address.class).invoke(fnhashobjmap, fn_addr);
+                } catch (Exception e) {
+                    // TODO
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
+                    String sStackTrace = sw.toString(); // stack trace as a string
+                    print(sStackTrace);
+                    return;
+                }
+            } catch(NoSuchMethodException e) {
+                // before Ghidra 10.2, it was getObject()
+                try {
+                    prop = (FnHashSaveable) fnhashobjmap.getClass().getDeclaredMethod("getObject").invoke(fnhashobjmap, fn_addr);
+                } catch (Exception e2) {
+                    // TODO
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
+                    e2.printStackTrace(pw);
+                    String sStackTrace = sw.toString(); // stack trace as a string
+                    print(sStackTrace);
+                    return;
+                }
+            }
+            //FnHashSaveable prop = (FnHashSaveable) fnhashobjmap.getObject(fn_addr);
             
             String filename_value = currentProgram.getExecutablePath();
             

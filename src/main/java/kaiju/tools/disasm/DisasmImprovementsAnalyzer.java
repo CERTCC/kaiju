@@ -72,9 +72,9 @@ import kaiju.util.Pair;
 public class DisasmImprovementsAnalyzer extends AbstractAnalyzer implements KaijuLogger {
     public static final boolean doingdebug = true;
     
-    private final static String NAME = "CERT Disassembly Improvements";
+    private final static String NAME = "Kaiju Disassembly Improvements";
     private final static String DESCRIPTION = "Improved program partitioning and disassembly algorithm.";
-    protected static final String OPTION_NAME_MA_FILE = "Run CERT Disassembly Improvements";
+    protected static final String OPTION_NAME_MA_FILE = "Run Kaiju Disassembly Improvements";
     
     public DisasmImprovementsAnalyzer() {
 

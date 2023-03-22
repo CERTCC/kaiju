@@ -24,25 +24,6 @@ import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressFormatException;
 import ghidra.util.Msg;
 import ghidra.util.exception.CancelledException;
-import ghihorn.GhiHornifierBuilder;
-import ghihorn.answer.format.GhiHornDisplaySettingBuilder;
-import ghihorn.answer.format.GhiHornDisplaySettings;
-import ghihorn.answer.format.GhiHornOutputFormatter;
-import ghihorn.api.ApiDatabase;
-import ghihorn.api.GhiHornApiDatabase;
-import ghihorn.cmd.GhiHornCommand;
-import ghihorn.cmd.GhiHornCommandListener;
-import ghihorn.decompiler.GhiHornSimpleDecompiler;
-import ghihorn.hornifer.GhiHornCommandEvent;
-import ghihorn.hornifer.GhiHornifier;
-import ghihorn.hornifer.horn.GhiHornAnswer;
-import ghihorn.tools.apianalyzer.ApiAnalyzerConfig;
-import ghihorn.tools.apianalyzer.ApiAnalyzerController;
-import ghihorn.tools.apianalyzer.ApiSignature;
-import ghihorn.tools.apianalyzer.json.ApiSignatureJsonParser;
-import ghihorn.tools.pathanalyzer.PathAnalyzerConfig;
-import ghihorn.tools.pathanalyzer.PathAnalyzerController;
-import ghihorn.z3.GhiHornFixedpointStatus;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -68,32 +49,6 @@ import kaiju.tools.ghihorn.tools.apianalyzer.json.ApiSignatureJsonParser;
 import kaiju.tools.ghihorn.tools.pathanalyzer.PathAnalyzerConfig;
 import kaiju.tools.ghihorn.tools.pathanalyzer.PathAnalyzerController;
 import kaiju.tools.ghihorn.z3.GhiHornFixedpointStatus;
-
-/**
- * Provides an easy interface for creating tools that support headless mode. Tools should implement
- * this interface in order to get a default implementation of command line parsing and handling.
- */
-interface KaijuHeadlessTool {
-
-    /**
-     * Implementers should define this function to create an OptionParser with all of the needed
-     * options for the tool that implements it.
-     */
-    OptionParser getOptionParser();
-
-    default OptionSet parse(String[] scriptArgs) throws OptionException {
-
-        String[] kaijuArgs = new String[scriptArgs.length];
-
-        // jopt-simple requires '--' for each argument but Ghidra requires plain arguments. So. add
-        // the
-        // '--' and only accept long versions
-        for (int i = 0; i < scriptArgs.length; i++) {
-            kaijuArgs[i] = "--" + scriptArgs[i];
-        }
-        return getOptionParser().parse(kaijuArgs);
-    }
-}
 
 public class GhiHornHeadlessTool extends HeadlessScript
         implements GhiHornCommandListener, KaijuHeadlessTool {

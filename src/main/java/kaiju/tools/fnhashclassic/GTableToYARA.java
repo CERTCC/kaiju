@@ -35,6 +35,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
@@ -68,6 +69,7 @@ import ghidra.util.task.Task;
 import ghidra.util.task.TaskLauncher;
 import ghidra.util.task.TaskMonitor;
 import kaiju.hashing.FnHashSaveable;
+import kaiju.tools.fnhash.HashViewerTableModel;
 import kaiju.util.ByteArrayList;
 import kaiju.util.HexUtils;
 
@@ -182,7 +184,6 @@ public final class GTableToYARA {
             PropertyMapManager man = current_program.getUsrPropertyManager();
             ObjectPropertyMap fnhashmap = man.getObjectPropertyMap("__CERT_Kaiju_FnHash");
             
-            FnHashSaveable prop = null;
             Class<?> c = null;
             try {
                 c = Class.forName("ghidra.program.model.util.ObjectPropertyMap");
@@ -191,22 +192,34 @@ public final class GTableToYARA {
                 return;
             }
 
+            FnHashSaveable prop = null;
             try
             {
                 // the get() function was introduced in Ghidra 10.2
-                c.getDeclaredMethod("get");
+                fnhashmap.getClass().getDeclaredMethod("get", Address.class);
                 try {
-                    prop = (FnHashSaveable) c.getDeclaredMethod("get").invoke(row_addr);
+                    prop = (FnHashSaveable) fnhashmap.getClass().getDeclaredMethod("get", Address.class).invoke(fnhashmap, row_addr);
                 } catch (Exception e) {
-                    //TODO
+                    // TODO
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
+                    String sStackTrace = sw.toString(); // stack trace as a string
+                    //print(sStackTrace);
                     return;
                 }
             } catch(NoSuchMethodException e) {
                 // before Ghidra 10.2, it was getObject()
                 try {
-                    prop = (FnHashSaveable) c.getDeclaredMethod("getObject").invoke(row_addr);
+                    prop = (FnHashSaveable) fnhashmap.getClass().getDeclaredMethod("getObject").invoke(fnhashmap, row_addr);
                 } catch (Exception e2) {
-                    //TODO
+                    // TODO
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
+                    e2.printStackTrace(pw);
+                    String sStackTrace = sw.toString(); // stack trace as a string
+                    //print(sStackTrace);
                     return;
                 }
             }
@@ -352,6 +365,21 @@ public final class GTableToYARA {
 
         monitor.setMessage("Writing model...");
         monitor.initialize(model.getRowCount());
+        
+        // TODO: is this anywhere near legit to do a cast?
+        Program current_program = ((GhidraTable) table).getProgram();
+        String filename_value = current_program.getExecutablePath();
+        String md5_value = current_program.getExecutableMD5();
+        
+        PropertyMapManager man = current_program.getUsrPropertyManager();
+        ObjectPropertyMap fnhashmap = man.getObjectPropertyMap("__CERT_Kaiju_FnHash");
+            
+        Class<?> c = null;
+        try {
+            c = Class.forName("ghidra.program.model.util.ObjectPropertyMap");
+        } catch (ClassNotFoundException e) {
+            //TODO
+        }
 
         int columnCount = table.getColumnCount();
         for (int row = 0; row < model.getRowCount(); ++row) {
@@ -359,19 +387,114 @@ public final class GTableToYARA {
                 break;
             }
             monitor.setProgress(row);
+            
+            String bytes_value = "";
+            String addr_value = "";
+            String pichash_value = "";
+            String numbytes_value = "";
+            String numinsns_value = "";
+            
             for (int col = 0; col < columnCount; col++) {
                 if (monitor.isCancelled()) {
                     break;
                 }
-
+                
                 String value = getColumnValue(table, model, row, col);
                 if (value == null) {
                     // not sure how this could happen...has the model changed out from under us?
                     value = "";
                 }
+                
+                if (col == HashViewerTableModel.COLUMNS.PIC_BYTES_COL.ordinal()) {
+                    bytes_value = getColumnValue(table, model, row, col);
+                }
+                if (col == HashViewerTableModel.COLUMNS.ADDRESS_COL.ordinal()) {
+                    addr_value = getColumnValue(table, model, row, col);
+                }
+                if (col == HashViewerTableModel.COLUMNS.PIC_HASH_COL.ordinal()) {
+                    pichash_value = getColumnValue(table, model, row, col);
+                }
+                if (col == HashViewerTableModel.COLUMNS.NUM_BYTES_COL.ordinal()) {
+                    numbytes_value = getColumnValue(table, model, row, col).toString();
+                }
+                if (col == HashViewerTableModel.COLUMNS.NUM_INSTRUCTIONS_COL.ordinal()) {
+                    numinsns_value = getColumnValue(table, model, row, col).toString();
+                }
 
-                writeYaraSignature(writer, value, value, value, value, value, value, value, monitor);
+            // TODO
+            
+            Address row_addr = current_program.getMinAddress();
+            try {
+                row_addr = row_addr.getAddress(addr_value);
+            } catch (ghidra.program.model.address.AddressFormatException afe) {
+                //TODO
+                continue;
             }
+            
+            FnHashSaveable prop = null;
+            try
+            {
+                // the get() function was introduced in Ghidra 10.2
+                fnhashmap.getClass().getDeclaredMethod("get", Address.class);
+                try {
+                    prop = (FnHashSaveable) fnhashmap.getClass().getDeclaredMethod("get", Address.class).invoke(fnhashmap, row_addr);
+                } catch (Exception e) {
+                    // TODO
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
+                    String sStackTrace = sw.toString(); // stack trace as a string
+                    //print(sStackTrace);
+                    continue;
+                }
+            } catch(NoSuchMethodException e) {
+                // before Ghidra 10.2, it was getObject()
+                try {
+                    prop = (FnHashSaveable) fnhashmap.getClass().getDeclaredMethod("getObject").invoke(fnhashmap, row_addr);
+                } catch (Exception e2) {
+                    // TODO
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
+                    e2.printStackTrace(pw);
+                    String sStackTrace = sw.toString(); // stack trace as a string
+                    //print(sStackTrace);
+                    continue;
+                }
+            }
+            if (prop == null) {
+                continue;
+            }
+            //FnHashSaveable prop = (FnHashSaveable) fnhashmap.getObject(row_addr);
+            
+            FnUtils fnu = null;
+            try {
+                fnu = new FnUtils(current_program.getFunctionManager().getFunctionAt(row_addr), current_program, monitor);
+            } catch (Exception e) {
+                // TODO: can we do something better here?
+                continue;
+            }
+            List<byte[]> fnbytes_list = fnu.getPICBytesList();
+            List<byte[]> fnmask_list = fnu.getPICMask();
+            ByteArrayList arrayOfBytes = new ByteArrayList();
+            ByteArrayList arrayOfMasks = new ByteArrayList();
+            for (int j = 0; j < fnbytes_list.size(); ++j) {
+                arrayOfBytes.add(fnbytes_list.get(j));
+                arrayOfMasks.add(fnmask_list.get(j));
+            }
+            // the HexUtils.byteArrayToHexString function handles the YARA generation
+            bytes_value = HexUtils.byteArrayToHexString(arrayOfBytes.toArray(), " ", arrayOfMasks.toArray());
+            
+            addr_value = row_addr.toString();
+            
+            pichash_value = prop.getPICHash();
+            
+            numbytes_value = prop.getNumBytes().toString();
+            
+            numinsns_value = prop.getNumInstructions().toString();
+            
+            }
+            writeYaraSignature(writer, filename_value, md5_value, bytes_value, addr_value, pichash_value, numbytes_value, numinsns_value, monitor);
             // two new lines for visual separation
             writeNewLine(writer);
             writeNewLine(writer);
@@ -383,7 +506,7 @@ public final class GTableToYARA {
     }
 
     /**
-     * Write the given fileds into YARA format and save the result into
+     * Write the given fields into YARA format and save the result into
      * the file specified by the writer.
      */
     private final static void writeYaraSignature(PrintWriter writer, String filename_value, String md5_value, String bytes_value, String addr_value, String pichash_value, String numbytes_value, String numinsns_value, TaskMonitor monitor) {

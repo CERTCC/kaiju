@@ -115,14 +115,28 @@ public class FnHashAnalyzer extends AbstractAnalyzer implements KaijuLogger {
     @Override
     public void registerOptions(Options options, Program program) {
 
-        options.registerOption(FnHashOptions.MIN_INSNS_OPTION_NAME, OptionType.INT_TYPE, FnHashOptions.MIN_INSNS_OPTION_DEFAULT, null,
-            "Set the minimum number of instructions needed to output data for a function");
+        options.registerOption(
+            FnHashOptions.MIN_INSNS_OPTION_NAME,
+            OptionType.INT_TYPE,
+            FnHashOptions.MIN_INSNS_OPTION_DEFAULT,
+            null,
+            "Set the minimum number of instructions needed to output data for a function"
+        );
         
-        options.registerOption(FnHashOptions.BASIC_BLOCK_OPTION_NAME, FnHashOptions.BASIC_BLOCK_OPTION_DEFAULT, null,
-            "Check if optional basic block level data should be included in output data");
+        options.registerOption(
+            FnHashOptions.BASIC_BLOCK_OPTION_NAME,
+            FnHashOptions.BASIC_BLOCK_OPTION_DEFAULT,
+            null,
+            "Check if optional basic block level data should be included in output data"
+        );
         
-        options.registerOption(FnHashOptions.LOG_LEVEL_OPTION_NAME, OptionType.ENUM_TYPE, MultiLogLevel.WARN, null,
-            "Set the minimum log level to be displayed in GUI messages, console, and application log");
+        options.registerOption(
+            FnHashOptions.LOG_LEVEL_OPTION_NAME,
+            OptionType.ENUM_TYPE,
+            MultiLogLevel.WARN,
+            null,
+            "Set the minimum log level to be displayed in GUI messages, console, and application log"
+        );
     }
     
     /**
@@ -152,7 +166,7 @@ public class FnHashAnalyzer extends AbstractAnalyzer implements KaijuLogger {
         Options options = program.getOptions(Program.ANALYSIS_PROPERTIES);
         
         // set up property maps to store hash data in ghidra program database
-        ObjectPropertyMap fnhashobjmap = KaijuPropertyManager.getOrCreateObjectPropertyMap(program, "FnHash", FnHashSaveable.class);
+        ObjectPropertyMap<FnHashSaveable> fnhashobjmap = KaijuPropertyManager.getOrCreateObjectPropertyMap(program, "FnHash", FnHashSaveable.class);
         
         // start analyzing functions
         // iterate over all functions (if not currently in a function or if running headless):
@@ -168,22 +182,24 @@ public class FnHashAnalyzer extends AbstractAnalyzer implements KaijuLogger {
                     break;
                 }
                 if (function == null) {
-                    debug(this, "Skipping Null Function Reference");
+                    info(this, "Skipping Null Function Reference");
                     continue;
                 }
                 if (function.isThunk()) {
-                    debug(this, "Skipping Thunk @ 0x" + function.getEntryPoint().toString());
+                    info(this, "Skipping Thunk @ 0x" + function.getEntryPoint().toString());
                     continue;
                 }
                 try {
                     FnHashSaveable hashresult = runOneFn(function, program, monitor);
                     fnhashobjmap.add(function.getEntryPoint(), hashresult);
                     fncount++;
+                    info(this, "Adding Function @ 0x" + function.getEntryPoint().toString());
                 } catch (Exception e) {
                     error(this, "Error while computing function hashes", e);
                 }
             }
         }
+        
         info(this, "Fn2Hash analysis complete: Found hashes for " + fncount + " functions.");
         //debug(this, ManualViewerCommandWrappedOption().getCommandString);
         

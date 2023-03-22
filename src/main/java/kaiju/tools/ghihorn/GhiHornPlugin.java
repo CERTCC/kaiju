@@ -1,10 +1,16 @@
 package kaiju.tools.ghihorn;
 
+import com.microsoft.z3.Version;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import docking.action.DockingAction;
+import docking.action.MenuData;
 import docking.action.builder.ActionBuilder;
+import generic.jar.ResourceFile;
 import ghidra.app.events.ProgramSelectionPluginEvent;
 import ghidra.app.plugin.PluginCategoryNames;
 import ghidra.app.plugin.ProgramPlugin;
@@ -14,6 +20,8 @@ import ghidra.app.plugin.core.colorizer.ColorizingService;
 import ghidra.app.services.GhidraScriptService;
 import ghidra.app.services.GoToService;
 import ghidra.app.services.ProgramManager;
+import ghidra.framework.Application;
+import ghidra.framework.Platform;
 import ghidra.framework.plugintool.PluginInfo;
 import ghidra.framework.plugintool.PluginTool;
 import ghidra.framework.plugintool.util.PluginStatus;
@@ -26,6 +34,9 @@ import ghidra.util.Msg;
 import ghidra.util.SystemUtilities;
 import ghidra.util.task.TaskMonitor;
 import ghidra.util.task.TaskMonitorAdapter;
+import kaiju.common.*;
+import kaiju.common.KaijuLogger;
+import kaiju.common.KaijuPluginPackage;
 import kaiju.tools.ghihorn.api.ApiDatabase;
 import kaiju.tools.ghihorn.api.GhiHornApiDatabase;
 import kaiju.tools.ghihorn.cmd.GhiHornCommand;
@@ -37,8 +48,8 @@ import kaiju.tools.ghihorn.tools.pathanalyzer.PathAnalyzerController;
 
 //@formatter:off
 @PluginInfo(
-	status = PluginStatus.UNSTABLE,
-	packageName = GhiHornPlugin.PLUGIN_NAME,
+	status = PluginStatus.STABLE,
+	packageName = KaijuPluginPackage.NAME,
 	category = PluginCategoryNames.ANALYSIS,
 	shortDescription = "Analyze horn clauses",
 	description = "Generate and analyze horn clauses using z3 and Ghidra.",
@@ -58,6 +69,33 @@ public class GhiHornPlugin extends ProgramPlugin implements AutoAnalysisManagerL
 
     // Universal configuration settings used by all tools
     public static final String HORNIFIER_NAME = "GH:Hornifier";
+    
+    private static boolean z3LibsFound;
+
+    static {
+        z3LibsFound = false;
+        try {
+            ResourceFile z3osDir = Application.getModuleSubDirectory("kaiju",
+                "os/" + Platform.CURRENT_PLATFORM.getDirectoryName());
+            String OS_DIR = z3osDir.getAbsolutePath() + "/";
+            
+            ResourceFile z3libDir = Application.getModuleSubDirectory("kaiju", "lib/");
+            String LIB_DIR = z3libDir.getAbsolutePath() + "/";
+            
+            KaijuNativeLibraryLoaderUtil.addLibsToJavaLibraryPath(OS_DIR);
+            
+            System.load(OS_DIR + "libz3" + Platform.CURRENT_PLATFORM.getLibraryExtension());
+            System.load(OS_DIR + "libz3java" + Platform.CURRENT_PLATFORM.getLibraryExtension());
+            String z3status = "Z3 version: " + Version.getFullVersion();
+            z3LibsFound = true;
+        } catch (FileNotFoundException fnfe) {
+            // TODO
+        } catch (IOException ioe) {
+            // TODO
+        } catch (UnsatisfiedLinkError ule) {
+            // TODO
+        }
+    }
 
     // The API service
     private GhiHornApiDatabase apiDatabase;
@@ -120,7 +158,7 @@ public class GhiHornPlugin extends ProgramPlugin implements AutoAnalysisManagerL
         super.programActivated(program);
 
         // Rerun auto analysis to remove/fix badness, such as non-returning
-        // funcitons
+        // functions
         AutoAnalysisManager aam = AutoAnalysisManager.getAnalysisManager(program);
         if (!aam.isAnalyzing()) {
             Msg.info(this, "Rerunning auto-analysis");
@@ -139,7 +177,7 @@ public class GhiHornPlugin extends ProgramPlugin implements AutoAnalysisManagerL
 
             this.ghihornAction = new ActionBuilder("Open GhiHorn", getName())
                     .supportsDefaultToolContext(true)
-                    .menuPath("&CERT", "GhiHorn")
+                    .menuPath("&Kaiju", "GhiHorn")
                     .onAction(c -> provider.setVisible(true))
                     .menuIcon(null)
                     .keyBinding("ctrl G")
@@ -214,6 +252,10 @@ public class GhiHornPlugin extends ProgramPlugin implements AutoAnalysisManagerL
 
         provider.setEntryPoints(entryPoints);
 
-        ghihornAction.setEnabled(true);
+        if (z3LibsFound) {
+            ghihornAction.setEnabled(true);
+        } else {
+            ghihornAction.setMenuBarData(new MenuData(new String[]{"&Kaiju", "GhiHorn is missing Z3"}));
+        }
     }
 }

@@ -52,6 +52,8 @@
 plugins {
     id 'java'
     id 'kaiju.gradle.ghidrahtml'
+    id "de.undercouch.download" version "5.3.1" // used to download z3 source zip archive
+    id "io.github.tomtzook.gradle-cmake" version "1.2.2" // used to build z3 automatically
 }
 
 
@@ -73,6 +75,11 @@ else {
     throw new GradleException("GHIDRA_INSTALL_DIR is not defined!")
 }
 //----------------------END "DO NOT MODIFY" SECTION-------------------------------
+
+OperatingSystem os = org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.currentOperatingSystem;
+
+// change this to set the version of Z3 we're using
+String z3Version = "4.12.1"
 
 def ghidraVersion;
 def minor;
@@ -107,59 +114,42 @@ if (VersionNumber.parse( gradle.gradleVersion ) <= VersionNumber.parse ("6.8.0")
     throw new GradleException("CERT Kaiju requires at least gradle version 6.8.0. Please update gradle and retry.")
 }
 
-// check for a java Z3CLASSPATH to be set, otherwise throw an exception.
-// TODO: can we guess the defaults on different OSes? OpenSUSE installs jars into /usr/share/java, for example.
-// NOTE: gradle seems to hijack the CLASSPATH env var when running, so we check for Z3CLASSPATH instead.
-def z3ClasspathDir
-if (System.env.Z3CLASSPATH) {
-    z3ClasspathDir = System.env.Z3CLASSPATH
-}
-else if (project.hasProperty("Z3CLASSPATH")) {
-    z3ClasspathDir = project.getProperty("Z3CLASSPATH")
-}
-if (!z3ClasspathDir) {
-    throw new GradleException("Z3CLASSPATH is not defined! Please define as path to the z3 jar.")
-}
-
 repositories {
     mavenCentral()
-    flatDir {
-        dirs z3ClasspathDir
-    }
 }
 
 dependencies {
-    //testImplementation('org.junit.jupiter:junit-jupiter-api:5.4.2')
-    //testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.4.2')
-    //testRuntimeOnly('org.junit.vintage:junit-vintage-engine:5.4.2')
     //testRuntimeOnly('org.opentest4j:opentest4j:1.1.1')
-    implementation(
-        ':com.microsoft.z3:4.8.11.0'
-    ) { because "Z3 is required to use Kaiju Ghihorn." }
+//     implementation(
+//         ':com.microsoft.z3:4.12.1.0'
+//     ) { because "Z3 is required to use Kaiju Ghihorn." }
 
     testImplementation(
-        'junit:junit:4.12',
-        'org.junit.jupiter:junit-jupiter-api:5.4.2',
-        'org.junit.jupiter:junit-jupiter-engine:5.4.2',
-        'org.junit.jupiter:junit-jupiter-migrationsupport:5.6.2'
+        'junit:junit:4.12', // needed on classpath to support junit 5 vintage
+        'org.junit.jupiter:junit-jupiter-api:5.9.2',
+        'org.junit.jupiter:junit-jupiter-engine:5.9.2',
+        'org.junit.jupiter:junit-jupiter-migrationsupport:5.9.2'
     )
     testRuntimeOnly(
-        'org.junit.jupiter:junit-jupiter-engine:5.4.2',
-        'org.junit.vintage:junit-vintage-engine:5.4.2'
+        'org.junit.jupiter:junit-jupiter-engine:5.9.2',
+        'org.junit.vintage:junit-vintage-engine:5.9.2'
     )
 }
 
-// TODO: this tries to leave out the gradle plugin unnecessary for runtime Kaiju,
-// but seems to fail. is there another way to configure this task defined by Ghidra?
-// for now including the plugin source/binaries isn't harmful but is unnecessary.
-buildExtension {
-    excludes ['buildSrc/**']
-}
+// don't include files not needed for runtime!
+buildExtension.exclude 'azure-pipelines.yml'
+buildExtension.exclude '*.bak'
+buildExtension.exclude 'buildSrc/**'
+buildExtension.exclude '3rdparty/**'
+buildExtension.exclude '.github/**'
+buildExtension.exclude '.vscode/**'
+
 
 task printGhidraDir {
     println 'Using Ghidra install directory ' + ghidraInstallDir
     println 'Using Java ' + targetCompatibility + ' for Ghidra ' + ghidraVersion
     println 'Using AUTOCATS test directory ' + project.property('KAIJU_AUTOCATS_DIR')
+    println 'Targeting '+ os.getDisplayName() + ' (' + System.properties['os.name'].toLowerCase() + '-' + System.getProperty('os.arch') + ')'
 }
 
 task copyToLib(type: Copy) {
@@ -189,20 +179,136 @@ task copyToLib(type: Copy) {
         from configurations.joptDependency
         into "lib"
     }
-    outputs.file file("lib/com.microsoft.z3-4.8.11.0.jar")
-    if (!file("lib/com.microsoft.z3-4.8.11.0.jar").exists()) {
-        configurations {
-            z3Dependency
-        }
+    from ("build/cmake/z3/linux-amd64/com.microsoft.z3.jar")
+    into "lib"
+}
 
-        dependencies {
-            z3Dependency name: 'com.microsoft.z3', version: '4.8.11.0'
-        }
+// download task uses plugin:
+// https://github.com/michel-kraemer/gradle-download-task
+task downloadZ3Source(type: Download) {
+    src 'https://github.com/Z3Prover/z3/archive/refs/tags/z3-4.12.1.zip'
+    dest new File('3rdparty', 'z3-4.12.1.zip')
+    overwrite false
+}
 
-        from configurations.z3Dependency
-        into "lib"
+task downloadAndUnzipZ3Source(dependsOn: downloadZ3Source, type: Copy) {
+    from zipTree(downloadZ3Source.dest)
+    into '3rdparty'
+    filesMatching("**") {
+        it.path = it.path.replace("z3-z3-4.12.1", "z3")
+    }
+    
+    includeEmptyDirs = true
+    
+    doLast {
+        // the zip creates these directories even though renamed?
+        // so just clear it during this task
+        if (file('3rdparty/z3-z3-4.12.1').exists()) {
+            def z3Dir2 = new File('3rdparty/z3-z3-4.12.1')
+            z3Dir2.deleteDir()
+        }
+    }
+    
+    outputs.upToDateWhen { file('3rdparty/z3/CMakeLists.txt').exists() }
+}
+
+buildExtension.dependsOn(downloadAndUnzipZ3Source)
+
+task cleanZ3Source(type: Delete) {
+    doLast {
+        def z3Dir = new File('3rdparty/z3')
+        z3Dir.deleteDir()
     }
 }
+
+tasks.clean.dependsOn(cleanZ3Source)
+
+// BEGIN: cmake z3 build section
+// based on: https://github.com/tomtzook/gradle-cmake
+
+cmake {
+    targets {
+        z3 {
+            cmakeLists.set(file('3rdparty/z3/CMakeLists.txt'))
+            targetMachines.add(machines.host)
+            // use ninja instead of make
+            generator.set(generators.ninja)
+            // pass options to cmake
+            cmakeArgs.add('-DCMAKE_BUILD_TYPE=Release')
+            cmakeArgs.add('-DZ3_BUILD_LIBZ3_SHARED=true')
+            cmakeArgs.add('-DZ3_BUILD_JAVA_BINDINGS=true')
+            cmakeArgs.add('-DZ3_USE_LIB_GMP=false')
+            cmakeArgs.add('-DZ3_LINK_TIME_OPTIMIZATION=true')
+            cmakeArgs.add('-DZ3_BUILD_EXECUTABLE=false')
+            cmakeArgs.add('-DZ3_BUILD_TEST_EXECUTABLES=false')
+            cmakeArgs.add('-DZ3_ENABLE_EXAMPLE_TARGETS=false')
+            //cmakeArgs.add('-DZ3_INCLUDE_GIT_HASH=false')
+            //cmakeArgs.add('-DZ3_INCLUDE_GIT_DESCRIBE=false')
+            // if wanted to pass options directly to make/ninja, would also use:
+            // generatorArgs.add()
+        }
+    }
+}
+
+tasks.clean.dependsOn(tasks.cmakeClean)
+tasks.build.dependsOn(tasks.cmakeBuild)
+tasks.cmakeBuild.dependsOn(downloadAndUnzipZ3Source)
+// since we are building the same version of z3, no need to rebuild
+// once we built it once because it won't change
+tasks.cmakeBuild.outputs.upToDateWhen( (output)-> {
+    file('build/cmake/z3/linux-amd64/libz3.so').exists() ||
+    file('build/cmake/z3/windows-amd64/libz3.dll').exists() ||
+    file('build/cmake/z3/osx-amd64/libz3.dylib').exists()
+})
+
+project.getTasks().matching(
+    (task)-> {
+        task.getName().contains("cmakez3") || task.getName().contains("z3_");
+    }
+).configureEach(
+    (task)-> {
+        task.dependsOn(downloadAndUnzipZ3Source);
+    }
+);
+
+buildExtension.dependsOn(tasks.cmakeBuild)
+copyToLib.dependsOn(tasks.cmakeBuild)
+
+if (os.isLinux()) {
+    task copyZ3toOsLinux(type: Copy) {
+        from ("build/cmake/z3/linux-amd64/libz3.so")
+        from ("build/cmake/z3/linux-amd64/libz3java.so")
+        into "os/linux_x86_64"
+    }
+    
+    copyZ3toOsLinux.dependsOn(tasks.cmakeBuild)
+    copyToLib.dependsOn(copyZ3toOsLinux)
+}
+
+if (os.isWindows()) {
+    task copyZ3toOsWin(type: Copy) {
+        from ("build/cmake/z3/windows-amd64/libz3.dll")
+        from ("build/cmake/z3/windows-amd64/libz3java.dll")
+        into "os/win_x86_64"
+    }
+    
+    copyZ3toOsWin.dependsOn(tasks.cmakeBuild)
+    copyToLib.dependsOn(copyZ3toOsWin)
+}
+
+if (os.isMacOsX()) {
+    task copyZ3toOsMac(type: Copy) {
+        from ("build/cmake/z3/osx-amd64/libz3.dylib")
+        from ("build/cmake/z3/osx-amd64/libz3java.dylib")
+        into "os/mac_x86_64"
+    }
+    
+    copyZ3toOsMac.dependsOn(tasks.cmakeBuild)
+    copyToLib.dependsOn(copyZ3toOsMac)
+}
+
+// END: cmake z3 build section
+
 copyDependencies.dependsOn(copyToLib)
 buildExtension.dependsOn(copyToLib)
 compileJava.dependsOn(copyToLib)
@@ -212,6 +318,7 @@ buildHelp.dependsOn(markdownToGhidraHtml)
 zipSource.dependsOn(markdownToGhidraHtml)
 markdownToGhidraHtml.sourceDir = file('docs/')
 markdownToGhidraHtml.outputDir = file('src/main/help/help/topics/kaiju/')
+
 
 task uninstallPreviousOOAnalyzerPlugin {
 
@@ -272,7 +379,7 @@ task copyZip(type: Copy) {
     group = "Installation"
     description = "Copies zip contents into special Extensions directory so user may enable or disable easily with reinstalling from gradle each time."
 
-    from "$buildExtension.destinationDir/$buildExtension.baseName.$buildExtension.extension"
+    from "${buildExtension.destinationDirectory}/${buildExtension.archiveBaseName}.${buildExtension.archiveExtension}"
     into ghidraInstallDir + '/Extensions/Ghidra'
     
     dependsOn uninstallPreviousKaiju
@@ -282,9 +389,9 @@ task installZip(type: Exec) {
     
     group = "Installation"
     description = "Installs the zip package in installed Ghidra's default extension directory"
-
+    
     workingDir ghidraInstallDir + '/Ghidra/Extensions'
-    commandLine 'unzip', '-o', "$buildExtension.destinationDir/$buildExtension.baseName.$buildExtension.extension"
+    commandLine 'unzip', '-o', "${buildExtension.destinationDirectory.getAsFile().get().getAbsolutePath()}/${buildExtension.archiveBaseName.get()}.${buildExtension.archiveExtension.get()}"
     
     dependsOn copyZip
     mustRunAfter copyZip
@@ -316,7 +423,7 @@ test {
     
     testLogging {
         events "passed", "skipped", "failed"
-	exceptionFormat = 'full'
+        exceptionFormat = 'full'
     }
     
     beforeSuite { descriptor ->

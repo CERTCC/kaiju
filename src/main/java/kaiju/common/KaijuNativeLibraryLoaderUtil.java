@@ -1,6 +1,6 @@
 /***
  * CERT Kaiju
- * Copyright 2021 Carnegie Mellon University.
+ * Copyright 2023 Carnegie Mellon University.
  *
  * NO WARRANTY. THIS CARNEGIE MELLON UNIVERSITY AND SOFTWARE ENGINEERING
  * INSTITUTE MATERIAL IS FURNISHED ON AN "AS-IS" BASIS. CARNEGIE MELLON UNIVERSITY
@@ -29,24 +29,27 @@
  *
  * DM21-0792
  */
+package kaiju.common;
 
-// based on https://github.com/NationalSecurityAgency/ghidra/blob/master/Ghidra/Features/FunctionID/ghidra_scripts/FunctionIDHeadlessPrescript.java
+import java.lang.reflect.Field;
 
-import ghidra.app.script.GhidraScript;
+public final class KaijuNativeLibraryLoaderUtil {
+    private static final String SYS_PATHS = "sys_paths";
 
-import java.util.Map;
+    private KaijuNativeLibraryLoaderUtil() {
+    }
 
-public class setupScript extends GhidraScript {
-	//enable CERT Function Hashing
-
-	private static final String CERT_FNHASH_ANALYZER = "CERT Function Hashing";
-
-	@Override
-	protected void run() throws Exception {
-		Map<String, String> options = getCurrentAnalysisOptionsAndValues(currentProgram);
-		if (options.containsKey(CERT_FNHASH_ANALYZER)) {
-			setAnalysisOption(currentProgram, CERT_FNHASH_ANALYZER, "true");
+    public static void addLibsToJavaLibraryPath(final String dirName) {
+        try {
+            System.setProperty("java.library.path", dirName);
+            System.setProperty("jna.library.path", dirName);
+            System.setProperty("jni.library.path", dirName);
+            final Field fieldSysPath = ClassLoader.class.getDeclaredField(SYS_PATHS);
+            fieldSysPath.setAccessible(true);
+            fieldSysPath.set(null, null);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            // TODO: can we log errors somewhere?
+            //error(e.getMessage(), e);
         }
-	}
+    }   
 }
-

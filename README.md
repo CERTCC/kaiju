@@ -31,7 +31,7 @@ instruction like RET causing many more unintended collisions). As
 such, analytical results may vary between this plugin and Pharos
 fn2hash.
 
-## Quick Installation
+## Installation
 
 [Pre-built Kaiju packages][prebuilts] are available. Simply download
 the ZIP file corresponding with your version of Ghidra and install
@@ -44,19 +44,12 @@ CERT Kaiju requires the following runtime dependencies:
 - Java 11+ (we recommend [OpenJDK 11](https://openjdk.java.net/install/))
 - [Z3](https://github.com/Z3Prover/z3) including Z3 Java bindings .jar
 
+Z3 is provided pre-compiled as part of the pre-built packages,
+or you may build Z3 on your own or use your Linux distribution's package.
+
 **NOTE**: We strongly recommend updating to Ghidra 10.1.2 or above
 in order to address the log4j vulnerability that exists
 in the library bundled with older versions of Ghidra.
-
-**NOTE**: If you use Linux, installing your distribution's Z3 packages
-may be sufficient. Otherwise, or if you are using Windows or Mac,
-you will need to manually add the Z3 Java bindings to the correct
-location in order to use some tools like Ghihorn. Please see
-the "Installation" section underneath "Ghihorn" later in this README.
-
-**NOTE**: It is also possible to build the extension package
-on your own and install it. Please see the instructions
-under the "Build Kaiju Yourself" section below.
 
 ### Graphical Installation
 
@@ -93,6 +86,11 @@ Ghidra extensions like Kaiju may also be installed manually
 by unzipping the extension contents into the appropriate directory
 of your Ghidra installation. For more information, please see
 [The Ghidra Installation Guide](https://ghidra-sre.org/InstallationGuide.html#Extensions).
+
+### Build It Yourself
+
+You can also build the Kaiju extension directly from source code.
+See the `INSTALL.md` file included in the top Kaiju source directory.
 
 
 ## Usage
@@ -160,25 +158,9 @@ Object Oriented Code with Ghidra][ooanalyzer-blog].
 ### GhiHorn
 A horn encoder for Ghidra version 10.1+.
 
-#### Installation
 
-1. You need to install Z3 and the [Z3 java bindings](https://github.com/Z3Prover/z3#java)
-   1. You need to add the jar file (`com.microsoft.z3.jar`) to the `GhiHorn/lib`
-      directory to make it available in the plugin.
-      * On Windows, you can place this `.jar` file in the same directory as `ghidraRun.bat`
-   2. You need to put the z3 and java binding libraries in a location that is available
-      1. On MacOS these files are `libz3.dylib` and `libz3java.dylib`
-      2. On linux these files are: `libz3.so` and `libz3java.so`
-      3. On Windows, these files are `libz3.dll` and `libz3java.dll`
-2. Build the GHiHorn plugin. The plugin build process uses `gradle` with some addtions:
-      * Run `gradle` to build the plugin
-      * Rung `gradle install` to build the ditribution package and copy it to Ghidra
-        * Be sure to set your _GHIDRA_INSTALL_DIR_ to your ghidra installation
-          in the file _gradle.properties_ before attempting to build.
-3. Following step 2, the plugin should be installed. You may need to restart
-   Ghidra to make the plugin available.
-4. You can launch the plugin by pressing `CTRL-G` or selecting GhiHorn from the
-   CERT menu.
+You can launch the plugin by pressing `CTRL-G` or selecting GhiHorn from
+the CERT menu.
 
 
 ### Command-line "Headless" Mode
@@ -245,187 +227,6 @@ process. This allows even simpler maintenance (update docs in
 just one place, not two) and keeps the two in sync.
 
 All new documentation should be added to the `docs/` directory.
-
-
-## Building Kaiju Yourself Using Gradle
-
-Alternately to the pre-built packages, you may compile and build
-Kaiju yourself.
-
-### Build Dependencies
-
-CERT Kaiju requires the following build dependencies:
-- [Ghidra](https://ghidra-sre.org) 10.1+
-- [gradle](https://gradle.org/install/) 6.9+ or 7+
-- [GSON](https://github.com/google/gson) 2.8.6 (handled automatically by gradle)
-- [JOpt Simple](https://github.com/jopt-simple/jopt-simple) 5.0.4 (handled automatically by gradle)
-- [Z3](https://github.com/Z3Prover/z3) 4.8.11+, built with the Java API
-- Java 11+ (we recommend [OpenJDK 11](https://openjdk.java.net/install/))
-
-**NOTE ABOUT GRADLE**: Please ensure that gradle is building against the same
-JDK version in use by Ghidra on your system, or you may experience
-installation problems.
-
-**NOTE ABOUT GSON**: In most cases, Gradle will automatically obtain this for
-you.  If you find that you need to obtain it manually, you can download
-[gson-2.8.6.jar](https://repo1.maven.org/maven2/com/google/code/gson/gson/2.8.6/gson-2.8.6.jar)
-and place it in the `kaiju/lib` directory before building.
-
-**NOTE ABOUT JOPT**: In most cases, Gradle will automatically obtain this for
-you.  If you find that you need to obtain it manually, you can download
-[jopt-simple-5.0.4.jar](https://repo1.maven.org/maven2/net/sf/jopt-simple/jopt-simple/5.0.4/jopt-simple-5.0.4.jar)
-and place it in the `kaiju/lib` directory before building.
-
-### Build Instructions
-
-#### Building Z3 with Java bindings
-
-If you use linux, your distro may provide Java bindings.
-If not, you will need to build Z3 with the appropriate findings:
-```bash
-cmake \
-  -DZ3_BUILD_LIBZ3_SHARED=true \
-  -DZ3_USE_LIB_GMP=true \
-  -DZ3_BUILD_JAVA_BINDINGS=true \
-  -DZ3_INSTALL_JAVA_BINDINGS=true \
-  -DZ3_JAVA_JAR_INSTALLDIR=%{_javadir} \
-  -DZ3_JAVA_JNI_LIB_INSTALLDIRR=%{_jnidir} \
-  -DZ3_ENABLE_EXAMPLE_TARGETS=false \
-  -DZ3_LINK_TIME_OPTIMIZATION=true \
-  -DCMAKE_BUILD_TYPE=Release
-```
-
-The extra `Z3_BUILD_JAVA_BINDINGS` flag ensures that the Java bindings are built
-with the library. From here, install Z3 like normal.
-
-#### Building Kaiju
-
-Once dependencies are installed, Kaiju may be built as a Ghidra
-extension by using the `gradle` build tool. It is recommended to
-first set a Ghidra environment variable, as Ghidra installation
-instructions specify. You will also need to identify where to find
-your local build of Z3's Java API .jar.
-
-In short: set `GHIDRA_INSTALL_DIR`and `Z3CLASSPATH` as environment
-variables first, then run `gradle` without any options:
-```bash
-export GHIDRA_INSTALL_DIR=<Absolute path to Ghidra install dir>
-export Z3CLASSPATH=<Absolute path to dir with Z3 .jar file>
-gradle
-```
-
-NOTE: Your Ghidra install directory is the directory containing
-the `ghidraRun` script (the top level directory after unzipping
-the Ghidra release distribution into the location of your choice.)
-
-If for some reason your environment variable is not or can not be set,
-you can also specify it on the command like with:
-```bash
-gradle -PGHIDRA_INSTALL_DIR=<Absolute path to Ghidra install dir> -PZ3CLASSPATH=<Absolute path to dir with Z3 .jar file>
-```
-
-In either case, the newly-built Kaiju extension will appear as a
-.zip file within the `dist/` directory. The filename will include
-"Kaiju", the version of Ghidra it was built against, and the date
-it was built. If all goes well, you should see a message like the
-following that tells you the name of your built plugin.
-```
-Created ghidra_X.Y.Z_PUBLIC_YYYYMMDD_kaiju.zip in <path/to>/kaiju/dist
-```
-where `X.Y.Z` is the version of Ghidra you are using, and
-`YYYYMMDD` is the date you built this Kaiju extension.
-
-### Optional: Running Tests With AUTOCATS
-
-While not required, you may want to use the Kaiju testing suite to
-verify proper compilation and ensure there are no regressions
-while testing new code or before you install Kaiju in a production
-environment.
-
-In order to run the Kaiju testing suite, you will need to first obtain
-the AUTOCATS (AUTOmated Code Analysis Testing Suite). AUTOCATS contains
-a number of executables and related data to perform tests and check
-for regressions in Kaiju. These test cases are shared with the Pharos
-binary analysis framework, therefore AUTOCATS is located in a separate
-git repository.
-
-Clone the AUTOCATS repository with:
-```
-git clone https://github.com/cmu-sei/autocats
-```
-
-We recommend cloning the AUTOCATS repository into the same parent
-directory that holds Kaiju, but you may clone it anywhere you wish.
-
-The tests can then be run with:
-
-```
-gradle -PKAIJU_AUTOCATS_DIR=path/to/autocats/dir test
-```
-where of course the correct path is provided to your cloned
-AUTOCATS repository directory. If cloned to the same parent
-directory as Kaiju as recommended, the command would look like:
-```
-gradle -PKAIJU_AUTOCATS_DIR=../autocats test
-```
-
-The tests cannot be run without
-providing this path; if you do forget it, gradle will abort
-and give an error message about providing this path.
-
-Kaiju has a dependency on [JUnit 5](https://junit.org/junit5/)
-only for running tests. Gradle should automatically retrieve
-and use JUnit, but you may also download JUnit and manually place
-into `lib/` directory of Kaiju if needed.
-
-You will want to run the update command whenever you pull the
-latest Kaiju source code, to ensure they stay in sync.
-
-### First-Time "Headless" Gradle-based Installation
-
-If you compiled and built your own Kaiju extension,
-you may alternately install the extension directly on the command line via
-use of gradle. Be sure to set `GHIDRA_INSTALL_DIR` as an environment
-variable first (if you built Kaiju too, then you should already have
-this defined), then run `gradle` as follows:
-```bash
-export GHIDRA_INSTALL_DIR=<Absolute path to Ghidra install dir>
-gradle install
-```
-or if you are unsure if the environment variable is set,
-```bash
-gradle -PGHIDRA_INSTALL_DIR=<Absolute path to Ghidra install dir> install
-```
-
-Extension files should be copied automatically. Kaiju will be available
-for use after Ghidra is restarted.
-
-**NOTE**: Be sure that Ghidra is NOT running before using gradle to
-install. We are aware of instances when the caching does not appear
-to update properly if installed while Ghidra is running, leading to
-some odd bugs. If this happens to you, simply exit Ghidra and try
-reinstalling again.
-
-#### Consider Removing Your Old Installation First
-
-It might be helpful to first completely remove any older install of
-Kaiju before updating to a newer release. We've seen some cases
-where older versions of Kaiju files get stuck in the cache and
-cause interesting bugs due to the conflicts. By removing the old
-install first, you'll ensure a clean re-install and easy use.
-
-The gradle build process now can auto-remove previous installs of Kaiju
-if you enable this feature. To enable the autoremove,
-add the "KAIJU_AUTO_REMOVE" property to your install command, such as
-(assuming the environment variable is probably set as in previous section):
-```bash
-gradle -PKAIJU_AUTO_REMOVE install
-```
-
-If you'd prefer to remove your old installation manually, perform a command like:
-```bash
-rm -rf $GHIDRA_INSTALL_DIR/Extensions/Ghidra/*kaiju*.zip $GHIDRA_INSTALL_DIR/Ghidra/Extensions/kaiju
-```
 
 
 ## Licensing

@@ -81,6 +81,7 @@ public class HornFunction {
         this.callBlocks = new ArrayList<>();
         this.retnBlocks = new ArrayList<>();
         this.entryBlock = null;
+        //this.entryBlock = new HornBlock(this, new HighCfgVertex<Address, VertexAttributes>());
         this.liveVars = null;
         this.name = function.getName(true);
 

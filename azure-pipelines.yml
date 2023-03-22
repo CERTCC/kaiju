@@ -16,12 +16,15 @@ jobs:
     GRADLE_VERSION: gradle-7.6
     GRADLE_URL: https://services.gradle.org/distributions/$(GRADLE_VERSION)-bin.zip
     GRADLE_INSTALL_DIR: $(Pipeline.Workspace)/gradle
-    Z3_VERSION: z3-4.12.0
+    Z3_VERSION: z3-4.12.1
   strategy:
     matrix:
       # disabled until make needed changes for Ghidra 10.3
       #ghidra-git:
       #  ghidraVersion: "master"
+      ghidra1023:
+        ghidraUrl: "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_10.2.3_build/ghidra_10.2.3_PUBLIC_20230208.zip"
+        ghidraVersion: "10.2.3"
       ghidra1022:
         ghidraUrl: "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_10.2.2_build/ghidra_10.2.2_PUBLIC_20221115.zip"
         ghidraVersion: "10.2.2"

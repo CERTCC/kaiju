@@ -4,6 +4,7 @@
 
 The following Kaiju tools are available in "headless" mode:
 
+- **ghihorn** = calculate paths in a given program
 - **fn2hash** = automatically run Fn2Hash on a given program
 and export all the hashes to a CSV file specified
 - **fn2yara** = automatically run Fn2Hash on a given program
@@ -23,51 +24,72 @@ on a virtual machine/resources with only a remote terminal.
 in graphical interface tools, simply due to the nature of
 how a typical user utilizes GUI versus command line tools.
 
-## Using the Headless Analyzer
+## Using the `runKaiju` script
+
+In the top installation directory of the Kaiju extension is a script called `runKaiju`.
+
+This script is the easiest way to run Kaiju tools from a command line,
+at least on a Linux distribution.
+
+Run:
+```
+kaijuRun --help
+```
+to get more information about how to use the headless command line features of
+Ghidra and Kaiju from a more friendly interface.
+
+You may need to first set executable permissions on the script.
+
+Under the hood, `kaijuRun` runs the Ghidra headless analyzer, which you can also
+run directly especially if you are using Windows. Some tips on how to run the
+Ghidra headless analyzer directly with Kaiju scripts are included below.
+
+## Using the Ghidra Headless Analyzer
 
 Kaiju makes use of Ghidra's built-in "Headless Analyzer" mode, as well
 as some GhidraScripts, to expose functionality and tools to the command line.
 Users are recommended to familiar with the official Ghidra documentation,
 for details please see the [Ghidra Headless Analyzer README](https://ghidra.re/ghidra_docs/analyzeHeadlessREADME.html).
 
-A brief overview, for the purposes of using CERT Kaiju in headless mode, is provided here.
+A brief overview, for the purposes of using the CERT Kaiju Function Hashing plugin in a headless mode, is provided here.
 
 ---
-
 The general syntax for the Headless analyzer is:
 
 `analyzeHeadless PROJECT_DIRECTORY PROJECT_NAME [options...]`
 
-Three main steps happen when you run this command:
+When using the Kaiju Function Hashing plugin there are two steps that need to be accomplished in addition to the usual import and analyze steps:
 
-1. if specified with `-preScript`, a GhidraScript is run (pre-analysis) that can be used to initialize or setup tools including Kaiju
-2. one or more Ghidra analyzers, including those installed by Kaiju, are run against the provided executable in the given project environment
-3. if specified with `-postScript`, a GhidraScript is then run (post-analysis) to process analyzer results (including export data to file)
+- enabling the Kaiju Function Hashing plugin before analysis (using the `-preScript` option)
+- extracting the function hashing artifacts after analysis (using the `-postScript` option)
 
-We have provided several sample scripts to perform these actions:
+We have provided scripts to perform these actions including:
 
-- _setupScript.java_  
-Ensures that the CERT Function Hashing plugin is enabled for headless analysis. (preScript)
+- _KaijuSetupScript.java_  
+Ensures that the Kaiju Function Hashing plugin is enabled for headless analysis.
 
-- _exportCSVHeadless.java_  
-Extracts the function hashing artifacts and outputs them to the specified file in CSV format. (postScript)
+- _KaijuExportCSVHeadless.java_  
+Extracts the function hashing artifacts and outputs them to the specified file in CSV format.
 
-- _exportXrefsToCSVHeadless.java_
-Counts the number of external References to Function entry points and outputs them to the specified file in CSV format. (postScript)
+- _KaijuExportYaraHeadless.java_  
+Extracts the function hashing artifacts and outputs them to the specified file as YARA rules.
+
+- _GhihornHeadlessTool.java_  
+Runs Ghihorn and outputs results to a file.
 
 ---
 
-### Examples
+### Examples 
 
-Analyzing a single binary with Fn2Hash and export the hashes to CSV:  
-`$GHIDRA_INSTALL_DIR/support/analyzeHeadless $HOME/ghidra_projects tmpProj -import exampleFile.exe -preScript setupScript.java -postScript exportCSVHeadless.java exampleFileResults.csv`
+Analyzing a single binary and outputting function hashes in a CSV file:  
+`$GHIDRA_INSTALL_DIR/support/analyzeHeadless $HOME/ghidra_projects tmpProj -import exampleFile.exe -preScript KaijuSetupScript.java -postScript KaijuExportCSVHeadless.java exampleFileResults.csv`
 
-Analyzing a directory of binaries with Fn2Hash:  
-`$GHIDRA_INSTALL_DIR/support/analyzeHeadless $HOME/ghidra_projects tmpProj -import path/to/binaries -preScript setupScript.java -postScript exportCSVHeadless.java exampleFileResults.csv`
+Analyzing a directory of binaries and outputting all function hashes:  
+`$GHIDRA_INSTALL_DIR/support/analyzeHeadless $HOME/ghidra_projects tmpProj -import path/to/binaries -preScript KaijuSetupScript.java -postScript KaijuExportCSVHeadless.java exampleFileResults.csv`
 
 
 Using `-okToDelete` and `-deleteProject` options on analyzeHeadless to remove tmpProj after import:  
-`$GHIDRA_INSTALL_DIR/support/analyzeHeadless $HOME/ghidra_projects tmpProj -okToDelete -deleteProject -import exampleFile.exe -preScript setupScript.java -postScript exportCSVHeadless.java exampleFileResults.csv`
+`$GHIDRA_INSTALL_DIR/support/analyzeHeadless $HOME/ghidra_projects tmpProj -okToDelete -deleteProject -import exampleFile.exe -preScript KaijuSetupScript.java -postScript KaijuExportCSVHeadless.java exampleFileResults.csv`
 
 *** NOTE *** This will DELETE any Ghidra project named `tmpProj` in your user directory defined by `$HOME/ghidra_projects` (or throw an error if `$HOME` is undefined)!
 

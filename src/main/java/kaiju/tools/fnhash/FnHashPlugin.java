@@ -32,13 +32,13 @@
 package kaiju.tools.fnhash;
 
 import java.io.File;
-
 import javax.swing.ImageIcon;
 
 import docking.ActionContext;
 import docking.action.DockingAction;
 import docking.action.MenuData;
 import docking.action.ToolBarData;
+import docking.action.builder.ActionBuilder;
 import docking.widgets.OptionDialog;
 import docking.widgets.filechooser.GhidraFileChooser;
 import docking.widgets.table.GTable;
@@ -62,13 +62,14 @@ import ghidra.program.util.ProgramChangeRecord;
 import ghidra.program.util.ProgramLocation;
 import ghidra.program.util.ProgramSelection;
 import ghidra.util.HelpLocation;
+import ghidra.util.SystemUtilities;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.table.GhidraTable;
 import ghidra.util.table.SelectionNavigationAction;
 import ghidra.util.table.actions.MakeProgramSelectionAction;
 import ghidra.util.task.SwingUpdateManager;
-import kaiju.common.KaijuLogger;
-import kaiju.common.KaijuPluginPackage;
+
+import kaiju.common.*;
 import kaiju.export.GTableToCSV;
 import kaiju.tools.fnhashclassic.GTableToYARA;
 import kaiju.tools.fnhashclassic.HeadlessToCSV;
@@ -76,31 +77,34 @@ import resources.Icons;
 import resources.ResourceManager;
 
 /**
- * Plugin that provides the "Defined Strings" table, where all the currently defined
- * string data in the program is listed.
- * <p>
- *
+ * Plugin that provides function hashing tools and visualizations.
+ * Includes basic analysis and intersection viewer for all programs
+ * in a project.
  */
 //@formatter:off
 @PluginInfo(
     status = PluginStatus.RELEASED,
     packageName = KaijuPluginPackage.NAME,
     category = PluginCategoryNames.ANALYSIS,
-    shortDescription = "CERT Program Function Hash Viewer",
-    description = "View function hashing data for a single program.",
+    shortDescription = "CERT Function Hashing",
+    description = "Function hashing tools and visualizations.",
     servicesRequired = { GoToService.class }
 )
 //@formatter:on
-public class HashViewerPlugin extends ProgramPlugin implements DomainObjectListener, KaijuLogger {
+public class FnHashPlugin extends ProgramPlugin implements DomainObjectListener, KaijuLogger {
 
-    private DockingAction showSettingsAction;
-    private SelectionNavigationAction linkNavigationAction;
-    private HashViewerProvider provider;
-    private SwingUpdateManager reloadUpdateMgr;
-    
     private static final String LAST_EXPORT_FILE = "LAST_EXPORT_DIR";
 
-    public HashViewerPlugin(PluginTool tool) {
+    private SelectionNavigationAction linkNavigationAction;
+    private SwingUpdateManager reloadUpdateMgr;
+    
+    private DockingAction openFnHashAction;
+    private DockingAction refreshAction;
+    private DockingAction showSettingsAction;
+    
+    private HashViewerProvider provider;
+
+    public FnHashPlugin(PluginTool tool) {
         //TODO: this api is marked deprecated in ghidra 10.2
         super(tool, false, false);
     }
@@ -112,10 +116,26 @@ public class HashViewerPlugin extends ProgramPlugin implements DomainObjectListe
     @Override
     protected void init() {
         super.init();
+        
+        if (!SystemUtilities.isInHeadlessMode()) {
 
-        provider = new HashViewerProvider(this);
-        reloadUpdateMgr = new SwingUpdateManager(100, 60000, this::doReload);
-        createActions();
+            this.reloadUpdateMgr = new SwingUpdateManager(100, 60000, this::doReload);
+            
+            this.provider = new HashViewerProvider(this);
+            
+            createActions();
+
+            this.openFnHashAction = new ActionBuilder("Open Fn2Hash", getName())
+                    .supportsDefaultToolContext(true)
+                    .menuPath("&Kaiju", "Fn2Hash")
+                    .onAction(c -> provider.setVisible(true))
+                    .menuIcon(null)
+                    .keyBinding("ctrl H")
+                    .enabled(false)
+                    .buildAndInstall(tool);
+        } else {
+            info(this, "Running in headless mode, use Kaiju FnHash scripts!");
+        }
     }
 
     private void createActions() {
@@ -123,7 +143,7 @@ public class HashViewerPlugin extends ProgramPlugin implements DomainObjectListe
         /**
          * Refresh action
          */
-        DockingAction refreshAction = new DockingAction("Re-Analyze", getName()) {
+        this.refreshAction = new DockingAction("Re-Analyze", getName()) {
 
             @Override
             public boolean isEnabledForContext(ActionContext context) {
@@ -138,7 +158,7 @@ public class HashViewerPlugin extends ProgramPlugin implements DomainObjectListe
         ImageIcon refreshIcon = Icons.REFRESH_ICON;
         refreshAction.setDescription("Reruns the Fn2Hash analyzer on the current program");
         refreshAction.setToolBarData(new ToolBarData(refreshIcon));
-        refreshAction.setHelpLocation(new HelpLocation("HashViewerPlugin", "ReAnalyze"));
+        refreshAction.setHelpLocation(new HelpLocation("FnHashPlugin", "ReAnalyze"));
         tool.addLocalAction(provider, refreshAction);
         
         /**
@@ -178,7 +198,7 @@ public class HashViewerPlugin extends ProgramPlugin implements DomainObjectListe
             new String[] { "Export", "Export to CSV..." }, 
             ResourceManager.loadImage("images/application-vnd.oasis.opendocument.spreadsheet-template.png"),
             "Y"));
-        exportCSVAction.setHelpLocation(new HelpLocation("HashViewerPlugin", "CSV"));
+        exportCSVAction.setHelpLocation(new HelpLocation("FnHashPlugin", "CSV"));
         tool.addLocalAction(provider, exportCSVAction);
         
         /**
@@ -207,7 +227,7 @@ public class HashViewerPlugin extends ProgramPlugin implements DomainObjectListe
             new String[] { "Export", "Export to YARA..." }, 
             ResourceManager.loadImage("images/application-vnd.oasis.opendocument.spreadsheet-template.png"),
             "Y"));
-        exportYaraAction.setHelpLocation(new HelpLocation("HashViewerPlugin", "YARA"));
+        exportYaraAction.setHelpLocation(new HelpLocation("FnHashPlugin", "YARA"));
         tool.addLocalAction(provider, exportYaraAction);
         
         /**
@@ -236,7 +256,7 @@ public class HashViewerPlugin extends ProgramPlugin implements DomainObjectListe
         };
         showSettingsAction.setPopupMenuData(new MenuData(new String[] { "Settings..." }, "R"));
         showSettingsAction.setDescription("Shows settings for the selected strings");
-        showSettingsAction.setHelpLocation(new HelpLocation("HashViewerPlugin", "Hash_Settings"));
+        showSettingsAction.setHelpLocation(new HelpLocation("FnHashPlugin", "Hash_Settings"));
         tool.addLocalAction(provider, showSettingsAction);
 
     }

@@ -68,7 +68,7 @@ public class MultiLogger implements ErrorLogger {
     private MultiLogger() {
         super();
         // set a default log level for displaying GUI messages
-        level = MultiLogLevel.WARN;
+        level = MultiLogLevel.ERROR;
         // set if GUI or headless, shouldn't change during running process?
         DockingApplicationConfiguration config = new DockingApplicationConfiguration();
         isGUI = !config.isHeadless();
@@ -99,6 +99,15 @@ public class MultiLogger implements ErrorLogger {
 
     @Override
     public void error(Object originator, Object message) {
+        Msg.error(originator, message);
+    }
+
+    @Override
+    public void error(Object originator, Object message, Throwable throwable) {
+        Msg.error(originator, message, throwable);
+    }
+    
+    public void errorUsingGui(Object originator, Object message) {
         if (isGUI && logLevelIsGreater(MultiLogLevel.ERROR)) {
             Msg.showError(originator, null, "Kaiju Error", message);
         } else {
@@ -106,8 +115,7 @@ public class MultiLogger implements ErrorLogger {
         }
     }
 
-    @Override
-    public void error(Object originator, Object message, Throwable throwable) {
+    public void errorUsingGui(Object originator, Object message, Throwable throwable) {
         if (isGUI && logLevelIsGreater(MultiLogLevel.ERROR)) {
             // Ghidra 9.2 appears to have removed the variant with a throwable
             Msg.showError(originator, null, "Kaiju Error", message);
@@ -118,6 +126,15 @@ public class MultiLogger implements ErrorLogger {
 
     @Override
     public void info(Object originator, Object message) {
+        Msg.info(originator, message);
+    }
+
+    @Override
+    public void info(Object originator, Object message, Throwable throwable) {
+        Msg.info(originator, message, throwable);
+    }
+    
+    public void infoUsingGui(Object originator, Object message) {
         if (isGUI && logLevelIsGreater(MultiLogLevel.INFO)) {
             Msg.showInfo(originator, null, "Kaiju Notification", message);
         } else {
@@ -125,8 +142,7 @@ public class MultiLogger implements ErrorLogger {
         }
     }
 
-    @Override
-    public void info(Object originator, Object message, Throwable throwable) {
+    public void infoUsingGui(Object originator, Object message, Throwable throwable) {
         if (isGUI && logLevelIsGreater(MultiLogLevel.INFO)) {
             // NOTE: showInfo doesn't seem to have a variant with a throwable
             Msg.showInfo(originator, null, "Kaiju Notification", message);
@@ -149,6 +165,15 @@ public class MultiLogger implements ErrorLogger {
 
     @Override
     public void warn(Object originator, Object message) {
+        Msg.warn(originator, message);
+    }
+
+    @Override
+    public void warn(Object originator, Object message, Throwable throwable) {
+        Msg.warn(originator, message, throwable);
+    }
+    
+    public void warnUsingGui(Object originator, Object message) {
         if (isGUI && logLevelIsGreater(MultiLogLevel.WARN)) {
             Msg.showWarn(originator, null, "Kaiju Warning", message);
         } else {
@@ -156,8 +181,7 @@ public class MultiLogger implements ErrorLogger {
         }
     }
 
-    @Override
-    public void warn(Object originator, Object message, Throwable throwable) {
+    public void warnUsingGui(Object originator, Object message, Throwable throwable) {
         if (isGUI && logLevelIsGreater(MultiLogLevel.WARN)) {
             // Ghidra 9.2 appears to have removed the variant with a throwable
             Msg.showWarn(originator, null, "Kaiju Warning", message);

@@ -1047,8 +1047,16 @@ public abstract class GhiHornifier {
         if (lsm != null) {
             for (int p = 0; p < lsm.getNumParams(); p++) {
                 HighParam param = lsm.getParam(p);
-                HornVariable hvp = new HornVariable(param);
-                hornFunction.addParameter(p, hvp);
+                // Per GitHub #23, param can be null sometimes?
+                // TODO - why? what should we do?
+                // for now, a simple check to avoid the error
+                if (param != null) {
+                    HornVariable hvp = new HornVariable(param);
+                    hornFunction.addParameter(p, hvp);
+                } else {
+                    HornVariable hvp = new HornVariable();
+                    hornFunction.addParameter(p, hvp);
+                }
             }
         } else {
 

@@ -14,9 +14,12 @@ but is expected to grow new tools and capabilities over time.
 
 The following capabilities are currently released in CERT Kaiju:
 
+- [GhiHorn](./GhiHorn.html)
 - [Function Hashing and Similiarity, including Fn2Hash and Fn2Yara](./FnHashing.html)
 - [OOAnalyzer Importer tool](./OOAnalyzerImporter.html)
 - [Disassembly Improvements analyzer](./DisAsmImprovements.html)
+
+Many tools can also be [run in headless mode](./HeadlessKaiju.html).
 
 ## Release Notes
 

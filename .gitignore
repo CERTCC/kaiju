@@ -10,19 +10,29 @@ Module.manifest
 *.jar
 .gradle/*
 gradle.properties
+3rdparty/*
 build/*
 buildSrc/build/*
 buildSrc/.gradle/*
 dist/*
 *.code-workspace
+*.kate-swp
+*.bak
 *.vscode/*
+VSCODE.classpath
 
 # ignore the gradle-generated help files, see originals in docs/ folder
 src/main/help/help/topics/kaiju/*.html
 src/main/help/help/topics/kaiju/images/*
-
+!3rdparty/
+3rdparty/*
+!3rdparty/README.md
 build/*
 lib/*
+os/linux_x86_64/*.so
+os/linux_x86_64/*.so.*
+os/win_x86_64/*.dll
+os/mac_x86_64/*.dylib
 *.code-workspace
 *.vscode/*
 .classpath
@@ -74,8 +84,6 @@ data/fileopen1.exe
 .DS_Store
 *.code-workspace
 data/apidb_src/kernel32.cpp
-os/osx64/libz3java.dylib
-os/osx64/libz3.dylib
 .project
 gradlew
 gradle/wrapper/gradle-wrapper.properties

@@ -56,6 +56,7 @@ sub_help(){
     echo "  fn2hash     Export function hashes to CSV file"
     echo "  fn2yara     Export function signatures to YARA file"
     echo "  xrefs       Export function XREFS to CSV file"
+    echo "  ghihorn     Export paths via Ghihorn to file"
     echo ""
     echo "For help with each subcommand run:"
     echo "$ProgName <subcommand> -h|--help"
@@ -63,7 +64,7 @@ sub_help(){
 }
 
 sub_version(){
-    $GHIDRA_INSTALL_DIR/support/analyzeHeadless /tmp tmpGhidraProj -okToDelete -deleteProject -postScript KaijuVersionPrinterHeadless.java
+    $GHIDRA_INSTALL_DIR/support/analyzeHeadless /tmp tmpKaijuHeadlessProj -okToDelete -deleteProject -postScript KaijuVersionPrinterHeadless.java
 }
   
 sub_fn2hash(){
@@ -88,7 +89,7 @@ sub_fn2hash(){
         *)
             echo "Running 'fn2hash' subcommand."
             echo "First arg is '$1'."
-            $GHIDRA_INSTALL_DIR/support/analyzeHeadless /tmp tmpGhidraProj -okToDelete -deleteProject -import $1 -preScript KaijuSetupScript.java -postScript KaijuExportCSVHeadless.java $1.FnHashes.csv
+            $GHIDRA_INSTALL_DIR/support/analyzeHeadless /tmp tmpKaijuHeadlessProj -okToDelete -deleteProject -import $1 -preScript KaijuSetupScript.java -postScript KaijuExportCSVHeadless.java $1.FnHashes.csv
             ;;
     esac
 }
@@ -115,7 +116,7 @@ sub_fn2yara(){
         *)
             echo "Running 'fn2yara' subcommand."
             echo "First arg is '$1'."
-            $GHIDRA_INSTALL_DIR/support/analyzeHeadless /tmp tmpGhidraProj -okToDelete -deleteProject -import $1 -preScript KaijuSetupScript.java -postScript KaijuExportYaraHeadless.java $1.yara
+            $GHIDRA_INSTALL_DIR/support/analyzeHeadless /tmp tmpKaijuHeadlessProj -okToDelete -deleteProject -import $1 -preScript KaijuSetupScript.java -postScript KaijuExportYaraHeadless.java $1.yara
             ;;
     esac
 }
@@ -142,7 +143,34 @@ sub_xrefs(){
         *)
             echo "Running 'xrefs' subcommand."
             echo "First arg is '$1'."
-            $GHIDRA_INSTALL_DIR/support/analyzeHeadless /tmp tmpGhidraProj -okToDelete -deleteProject -import $1 -preScript KaijuSetupScript.java -postScript KaijuExportXrefsToCSVHeadless.java $1.Xref.csv
+            $GHIDRA_INSTALL_DIR/support/analyzeHeadless /tmp tmpKaijuHeadlessProj -okToDelete -deleteProject -import $1 -preScript KaijuSetupScript.java -postScript KaijuExportXrefsToCSVHeadless.java $1.Xref.csv
+            ;;
+    esac
+}
+
+sub_ghihorn(){
+    if [ $# -eq 0 ]; then
+        echo "ghihorn: Need an input file to import and analyze."
+        echo "For help run:"
+        echo "$ProgName ghihorn -h|--help"
+        exit -1
+    fi
+    if [ "$#" -ne 1 ]; then
+        echo "ghihorn: Illegal number of parameters"
+        echo "For help run:"
+        echo "$ProgName ghihorn -h|--help"
+        exit -1
+    fi
+    case $1 in
+        "-h" | "--help")
+            echo "Usage: $ProgName ghihorn <exe>"
+            echo "  <exe>       path to exe to analyze"
+            echo "Output: a CSV file with function hash data"
+            ;;
+        *)
+            echo "Running 'ghihorn' subcommand."
+            echo "First arg is '$1'."
+            $GHIDRA_INSTALL_DIR/support/analyzeHeadless /tmp tmpKaijuHeadlessProj -okToDelete -deleteProject -import $1 -preScript KaijuSetupScript.java -postScript GhiHornHeadlessTool.java
             ;;
     esac
 }
@@ -155,7 +183,7 @@ case $subcommand in
     "-v" | "--version")
         sub_version
         ;;
-    "fn2hash" | "fn2yara" | "xrefs")
+    "fn2hash" | "fn2yara" | "xrefs" | "ghihorn")
         shift
         sub_${subcommand} $@
         ;;

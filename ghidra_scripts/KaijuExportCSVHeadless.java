@@ -31,6 +31,8 @@
  */
 import java.io.File;
 import java.io.FileWriter;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 import java.util.StringJoiner;
 
 import ghidra.app.script.GhidraScript;
@@ -63,7 +65,52 @@ public class KaijuExportCSVHeadless extends GhidraScript {
 
         while(addriter.hasNext()){
             Address fn_addr = addriter.next();
-            FnHashSaveable fnhash = (FnHashSaveable) fnhashobjmap.getObject(fn_addr);
+            
+            Class<?> c = null;
+            try {
+                c = Class.forName("ghidra.program.model.util.ObjectPropertyMap");
+            } catch (ClassNotFoundException e) {
+                // TODO
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                String sStackTrace = sw.toString(); // stack trace as a string
+                print(sStackTrace);
+                return;
+            }
+
+            FnHashSaveable fnhash = null;
+            try
+            {
+                // the get() function was introduced in Ghidra 10.2
+                fnhashobjmap.getClass().getDeclaredMethod("get", Address.class);
+                try {
+                    fnhash = (FnHashSaveable) fnhashobjmap.getClass().getDeclaredMethod("get", Address.class).invoke(fnhashobjmap, fn_addr);
+                } catch (Exception e) {
+                    // TODO
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
+                    String sStackTrace = sw.toString(); // stack trace as a string
+                    print(sStackTrace);
+                    return;
+                }
+            } catch(NoSuchMethodException e) {
+                // before Ghidra 10.2, it was getObject()
+                try {
+                    fnhash = (FnHashSaveable) fnhashobjmap.getClass().getDeclaredMethod("getObject").invoke(fnhashobjmap, fn_addr);
+                } catch (Exception e2) {
+                    // TODO
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
+                    e2.printStackTrace(pw);
+                    String sStackTrace = sw.toString(); // stack trace as a string
+                    print(sStackTrace);
+                    return;
+                }
+            }
+            //FnHashSaveable fnhash = fnhashobjmap.get(fn_addr);
             
 
             /*
