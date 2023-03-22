@@ -26,12 +26,14 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-    - name: Set up Ghidra ${{ matrix.ghidra_version }}
+    - name: Download Ghidra ${{ matrix.ghidra_version }}
       uses: robinraju/release-downloader@v1.7
       with:
         repository: "NationalSecurityAgency/ghidra"
         tag: "Ghidra_${{ matrix.ghidra_version }}_build"
         fileName: "Ghidra*.zip"
+    - name: Unzip Ghidra ${{ matrix.ghidra_version }}
+      run: 7z x Ghidra_${{ matrix.ghidra_version }}_*.zip
     - name: Build with Gradle
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
       env:
