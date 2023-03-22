@@ -35,9 +35,9 @@ jobs:
     - name: Unzip Ghidra ${{ matrix.ghidra_version }}
       run: 7z x ghidra_${{ matrix.ghidra_version }}_*.zip
     - name: Build with Gradle
-      uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+      uses: gradle/gradle-build-action@v2
       env:
-        GHIDRA_INSTALL_DIR: 'ghidra_${{ matrix.ghidra_version }}_PUBLIC/'
+        GHIDRA_INSTALL_DIR: '${{ github.workspace }}/ghidra_${{ matrix.ghidra_version }}_PUBLIC/'
       with:
         gradle-version: '7.6'
         arguments: test
