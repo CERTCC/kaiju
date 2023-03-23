@@ -247,7 +247,7 @@ cmake {
                 try {
                     def result = exec { 
                         ignoreExitValue = true
-                        commandLine 'ninja', '--help'
+                        commandLine 'ninja', '--version'
                     }
                     generator.set(generators.ninja)
                 } catch (Exception e) {
@@ -449,12 +449,12 @@ test {
     
     beforeSuite { descriptor ->
     // check that user has specified the property AND set it (not empty)
-    if (!project.hasProperty('KAIJU_AUTOCATS_DIR') || project.getProperty('KAIJU_AUTOCATS_DIR') == '') {
+    if (!autocatsDir || autocatsDir == '') {
         throw new GradleException("FATAL ERROR! Kaiju requires specification of the directory where the AUTOCATS tests may be found. Please re-run the tests with the -PKAIJU_AUTOCATS_DIR=<path/to/autocats/dir> command option. Please consult the README.md for more information on AUTOCATS and how to obtain the AUTOCATS tests.")
     }
     
     // check that the specified directory actually exists
-    if (!file(project.property('KAIJU_AUTOCATS_DIR')).exists()) {
+    if (!file(autocatsDir).exists()) {
         throw new GradleException("FATAL ERROR! The AUTOCATS path provided to Kaiju does not appear to exist. Please re-check the path then retry the -PKAIJU_AUTOCATS_DIR=<path/to/autocats/dir> command option. You may wish to provide the full absolute path to reduce errors. Please consult the README.md for more information on AUTOCATS and how to obtain the AUTOCATS tests.")
     }
     
