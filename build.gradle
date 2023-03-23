@@ -101,6 +101,15 @@ if (minor && minor < 2) {
     targetCompatibility = 1.17
 }
 
+def autocatsDir
+if (System.env.KAIJU_AUTOCATS_DIR) {
+	autocatsDir = System.env.KAIJU_AUTOCATS_DIR
+}
+else if (project.hasProperty("KAIJU_AUTOCATS_DIR")) {
+	autocatsDir = project.getProperty("KAIJU_AUTOCATS_DIR")
+}
+
+
 // allow installation using:
 // > gradle -PGHIDRA_INSTALL_DIR=/path/to/ghidra install
 // you can also allow removal of the any previous Kaiju install prior to
@@ -148,7 +157,7 @@ buildExtension.exclude '.vscode/**'
 task printGhidraDir {
     println 'Using Ghidra install directory ' + ghidraInstallDir
     println 'Using Java ' + targetCompatibility + ' for Ghidra ' + ghidraVersion
-    println 'Using AUTOCATS test directory ' + project.property('KAIJU_AUTOCATS_DIR')
+    println 'Using AUTOCATS test directory ' + autocatsDir
     println 'Targeting '+ os.getDisplayName() + ' (' + System.properties['os.name'].toLowerCase() + '-' + System.getProperty('os.arch') + ')'
 }
 

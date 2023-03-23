@@ -39,7 +39,7 @@ jobs:
       with:
         repository: CERTCC/autocats
         path: autocats
-    - name: Build with Gradle
+    - name: Build and test with Gradle
       uses: gradle/gradle-build-action@v2
       env:
         GHIDRA_INSTALL_DIR: '${{ github.workspace }}/ghidra_${{ matrix.ghidra_version }}_PUBLIC/'
@@ -47,11 +47,3 @@ jobs:
       with:
         gradle-version: '7.6'
         arguments: build
-    - name: Test with Gradle
-      uses: gradle/gradle-build-action@v2
-      env:
-        GHIDRA_INSTALL_DIR: '${{ github.workspace }}/ghidra_${{ matrix.ghidra_version }}_PUBLIC/'
-        KAIJU_AUTOCATS_DIR: '${{ github.workspace }}/autocats/'
-      with:
-        gradle-version: '7.6'
-        arguments: test
