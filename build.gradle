@@ -240,8 +240,20 @@ cmake {
         z3 {
             cmakeLists.set(file('3rdparty/z3/CMakeLists.txt'))
             targetMachines.add(machines.host)
-            // use ninja instead of make
-            generator.set(generators.ninja)
+            // we could use ninja instead of make
+            // but for cross-compatibility reasons,
+            // we're letting the default run
+            if (os.isLinux()) {
+                try {
+                    def result = exec { 
+                        ignoreExitValue = true
+                        commandLine 'ninja', '--help'
+                    }
+                    generator.set(generators.ninja)
+                } catch (Exception e) {
+                    // do nothing, just let the default generator run
+                }
+            }
             // pass options to cmake
             cmakeArgs.add('-DCMAKE_BUILD_TYPE=Release')
             cmakeArgs.add('-DZ3_BUILD_LIBZ3_SHARED=true')
