@@ -34,16 +34,28 @@ jobs:
         fileName: "ghidra*.zip"
     - name: Unzip Ghidra ${{ matrix.ghidra_version }}
       run: 7z x ghidra_${{ matrix.ghidra_version }}_*.zip
-    - name: Checkout AUTOCATS repo for testing
-      uses: actions/checkout@v3
-      with:
-        repository: CERTCC/autocats
-        path: autocats
-    - name: Build and test with Gradle
+    - name: Build with Gradle
       uses: gradle/gradle-build-action@v2
       env:
         GHIDRA_INSTALL_DIR: '${{ github.workspace }}/ghidra_${{ matrix.ghidra_version }}_PUBLIC/'
         KAIJU_AUTOCATS_DIR: '${{ github.workspace }}/autocats/'
       with:
         gradle-version: '7.6'
-        arguments: build
+        arguments: --build-cache
+    - name: Checkout AUTOCATS repo for testing
+      uses: actions/checkout@v3
+      with:
+        repository: CERTCC/autocats
+        path: autocats
+    - name: Setup head screen on Linux
+      run: xvfb :1 &
+      if: runner.os == 'Linux'
+    - name: Run tests
+      uses: gradle/gradle-build-action@v2
+      env:
+        GHIDRA_INSTALL_DIR: '${{ github.workspace }}/ghidra_${{ matrix.ghidra_version }}_PUBLIC/'
+        KAIJU_AUTOCATS_DIR: '${{ github.workspace }}/autocats/'
+        DISPLAY: ':1'
+      with:
+        gradle-version: '7.6'
+        arguments: --build-cache --stacktrace --info test
