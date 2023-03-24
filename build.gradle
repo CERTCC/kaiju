@@ -433,7 +433,7 @@ task install() {
 
 test {
 
-    // needed prior to Ghidra 10.3 to address sun.awt not exported in JDK 17+
+    // add-exports needed prior to Ghidra 10.3 to address sun.awt not exported in JDK 17+
     jvmArgs = ['--add-exports=java.desktop/sun.awt=ALL-UNNAMED', '-Djava.awt.headless=true']
 
     useJUnitPlatform()
