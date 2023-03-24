@@ -433,8 +433,11 @@ task install() {
 
 test {
 
-    // add-exports needed prior to Ghidra 10.3 to address sun.awt not exported in JDK 17+
-    jvmArgs = ['--add-exports=java.desktop/sun.awt=ALL-UNNAMED', '-Djava.awt.headless=true']
+    jvmArgs = ['-Djava.awt.headless=true',
+                // add-exports needed prior to Ghidra 10.3 to address sun.awt not exported in JDK 17+
+                '--add-exports=java.desktop/sun.awt=ALL-UNNAMED',
+                // add the kaiju os directories to load z3 library to run tests
+                '-Djava.library.path=' + ghidraInstallDir + '/Ghidra/Extensions/kaiju/lib/:'+ ghidraInstallDir + '/Ghidra/Extensions/kaiju/os/linux_x86_64/:' + ghidraInstallDir + '/Ghidra/Extensions/kaiju/os/mac_x86_64/:' + ghidraInstallDir + '/Ghidra/Extensions/kaiju/os/win_x86_64/']
 
     useJUnitPlatform()
     

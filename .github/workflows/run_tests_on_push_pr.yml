@@ -43,7 +43,7 @@ jobs:
         GHIDRA_INSTALL_DIR: '${{ github.workspace }}/ghidra_${{ matrix.ghidra_version }}_PUBLIC/'
         KAIJU_AUTOCATS_DIR: '${{ github.workspace }}/autocats/'
       run: |
-          gradle --build-cache
+          gradle --build-cache install
     - name: Checkout AUTOCATS repo for testing
       uses: actions/checkout@v3
       with:
