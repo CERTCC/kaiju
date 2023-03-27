@@ -192,6 +192,9 @@ task copyToLib(type: Copy) {
     into "lib"
 }
 
+// BEGIN: if user gives flag, skip building Z3
+if (!project.hasProperty('KAIJU_SKIP_Z3_BUILD')) {
+
 // download task uses plugin:
 // https://github.com/michel-kraemer/gradle-download-task
 task downloadZ3Source(type: Download) {
@@ -329,6 +332,10 @@ if (os.isMacOsX()) {
 }
 
 // END: cmake z3 build section
+
+}
+
+// END
 
 copyDependencies.dependsOn(copyToLib)
 buildExtension.dependsOn(copyToLib)
