@@ -13,6 +13,8 @@ permissions:
 
 jobs:
   build_kaiju:
+    permissions:
+      contents: write
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -90,5 +92,3 @@ jobs:
         artifacts: '${{ github.workspace }}/ghidra_${{ matrix.ghidra_version }}_PUBLIC/dist/*.zip'
         artifactContentType: 'application/zip'
         allowUpdates: true
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
