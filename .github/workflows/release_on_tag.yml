@@ -1,0 +1,94 @@
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+
+name: Release On Tag
+
+on:
+  push:
+    tags:
+      - '*'
+
+permissions:
+  contents: read
+
+jobs:
+  build_kaiju:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        ghidra_version: [10.2.3, 10.2.2, 10.2.1, 10.2]
+    runs-on: ${{ matrix.os }}
+    needs: create_release
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    - name: Download Ghidra ${{ matrix.ghidra_version }}
+      uses: robinraju/release-downloader@v1.7
+      with:
+        repository: "NationalSecurityAgency/ghidra"
+        tag: "Ghidra_${{ matrix.ghidra_version }}_build"
+        fileName: "ghidra*.zip"
+    - name: Unzip Ghidra ${{ matrix.ghidra_version }}
+      run: 7z x ghidra_${{ matrix.ghidra_version }}_*.zip
+      
+    - name: Download Z3 for Linux x64 (glibc)
+      uses: robinraju/release-downloader@v1.7
+      with:
+        repository: "Z3Prover/z3"
+        tag: "z3-4.12.1"
+        fileName: "z3-4.12.1-x64-glibc-2.35.zip"
+    - name: Unzip Z3 for Linux x64 (glibc)
+      run: |
+          7z x z3-4.12.1-x64-glibc-2.35.zip
+          cp z3-4.12.1-x64-glibc-2.35/bin/*.so ${{ github.workspace }}/os/linux_x86_64/
+    - name: Download Z3 for Windows x64
+      uses: robinraju/release-downloader@v1.7
+      with:
+        repository: "Z3Prover/z3"
+        tag: "z3-4.12.1"
+        fileName: "z3-4.12.1-x64-win.zip"
+    - name: Unzip Z3 for Windows x64
+      run: |
+          7z x z3-4.12.1-x64-win.zip
+          cp z3-4.12.1-x64-win/bin/*.dll ${{ github.workspace }}/os/win_x86_64/
+    - name: Download Z3 for MacOS x64
+      uses: robinraju/release-downloader@v1.7
+      with:
+        repository: "Z3Prover/z3"
+        tag: "z3-4.12.1"
+        fileName: "z3-4.12.1-x64-osx-10.16.zip"
+    - name: Unzip Z3 for MacOS x64
+      run: |
+          7z x z3-4.12.1-x64-osx-10.16.zip
+          cp z3-4.12.1-x64-osx-10.16/bin/*.dylib ${{ github.workspace }}/os/mac_x86_64/
+      
+    - name: Set up Gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        gradle-version: '7.6'
+    - name: Build with Gradle
+      env:
+        GHIDRA_INSTALL_DIR: '${{ github.workspace }}/ghidra_${{ matrix.ghidra_version }}_PUBLIC/'
+        KAIJU_AUTOCATS_DIR: '${{ github.workspace }}/autocats/'
+      run: |
+          gradle -PKAIJU_SKIP_Z3_BUILD --build-cache install
+          
+    - name: Create Release for Ghidra ${{ matrix.ghidra_version }}
+      uses: ncipollo/create-release@v1
+      id: create_release
+      with:
+        draft: false
+        prerelease: false
+        name: ${{ github.ref }}
+        tag: ${{ github.ref }}
+        commit: 'main'
+        body: "See CHANGELOG.md for more information."
+        artifacts: '${{ github.workspace }}/ghidra_${{ matrix.ghidra_version }}_PUBLIC/dist/*.zip'
+        artifactContentType: 'application/zip'
+        allowUpdates: true
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
