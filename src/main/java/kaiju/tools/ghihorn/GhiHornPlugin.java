@@ -71,29 +71,15 @@ public class GhiHornPlugin extends ProgramPlugin implements AutoAnalysisManagerL
     public static final String HORNIFIER_NAME = "GH:Hornifier";
     
     private static boolean z3LibsFound;
-
+    
     static {
-        z3LibsFound = false;
         try {
-            ResourceFile z3osDir = Application.getModuleSubDirectory("kaiju",
-                "os/" + Platform.CURRENT_PLATFORM.getDirectoryName());
-            String OS_DIR = z3osDir.getAbsolutePath() + "/";
-            
-            ResourceFile z3libDir = Application.getModuleSubDirectory("kaiju", "lib/");
-            String LIB_DIR = z3libDir.getAbsolutePath() + "/";
-            
-            KaijuNativeLibraryLoaderUtil.addLibsToJavaLibraryPath(OS_DIR);
-            
-            System.load(OS_DIR + "libz3" + Platform.CURRENT_PLATFORM.getLibraryExtension());
-            System.load(OS_DIR + "libz3java" + Platform.CURRENT_PLATFORM.getLibraryExtension());
+            KaijuNativeLibraryLoaderUtil.loadLibrary("z3");
+            KaijuNativeLibraryLoaderUtil.loadLibrary("z3java");
             String z3status = "Z3 version: " + Version.getFullVersion();
             z3LibsFound = true;
-        } catch (FileNotFoundException fnfe) {
-            // TODO
-        } catch (IOException ioe) {
-            // TODO
-        } catch (UnsatisfiedLinkError ule) {
-            // TODO
+        } catch (Throwable t) {
+            z3LibsFound = false;
         }
     }
 

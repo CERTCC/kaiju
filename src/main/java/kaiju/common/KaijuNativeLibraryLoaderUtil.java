@@ -31,25 +31,20 @@
  */
 package kaiju.common;
 
-import java.lang.reflect.Field;
+import ghidra.framework.Application;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.lang.UnsatisfiedLinkError;
 
 public final class KaijuNativeLibraryLoaderUtil {
-    private static final String SYS_PATHS = "sys_paths";
 
-    private KaijuNativeLibraryLoaderUtil() {
+    private KaijuNativeLibraryLoaderUtil() {}
+    
+    public static void loadLibrary(String name) throws FileNotFoundException, UnsatisfiedLinkError {
+        // System.mapLibraryName will add "lib" and proper extension depending on OS
+        // so e.g., call mapLibraryName("z3") to get libz3.so on linux
+        File libraryPath = Application.getOSFile(System.mapLibraryName(name));
+        System.load(libraryPath.getAbsolutePath());
     }
-
-    public static void addLibsToJavaLibraryPath(final String dirName) {
-        try {
-            System.setProperty("java.library.path", dirName);
-            System.setProperty("jna.library.path", dirName);
-            System.setProperty("jni.library.path", dirName);
-            final Field fieldSysPath = ClassLoader.class.getDeclaredField(SYS_PATHS);
-            fieldSysPath.setAccessible(true);
-            fieldSysPath.set(null, null);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            // TODO: can we log errors somewhere?
-            //error(e.getMessage(), e);
-        }
-    }   
 }

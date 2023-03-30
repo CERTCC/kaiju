@@ -67,9 +67,21 @@ public class KaijuStatusCheckPlugin extends Plugin implements ApplicationLevelOn
 
     private KaijuStatusCheckDialog dialog;
     private DockingAction action;
+    
+    private static boolean z3LibsFound;
 
     public KaijuStatusCheckPlugin(PluginTool tool) {
         super(tool);
+    }
+    
+    static {
+        try {
+            KaijuNativeLibraryLoaderUtil.loadLibrary("z3");
+            KaijuNativeLibraryLoaderUtil.loadLibrary("z3java");
+            z3LibsFound = true;
+        } catch (Throwable t) {
+            z3LibsFound = false;
+        }
     }
 
     @Override

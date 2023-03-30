@@ -1,7 +1,13 @@
 # GhiHorn
 A horn encoder for Ghidra version 10.1+ and above.
+GhiHorn uses Z3 SMT library.
 
-## Installation
+## Old Z3 Installation
+
+These instructions are outdated; see `INSTALL.md` in the Kaiju
+source code for updated information. These directions are
+preserved until confirmed that we have a better automated way
+to install Z3.
 
 1. You need to install Z3 and the [Z3 java bindings](https://github.com/Z3Prover/z3#java)
    1. You need to add the jar file (`com.microsoft.z3.jar`) to the `GhiHorn/lib`

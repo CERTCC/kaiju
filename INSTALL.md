@@ -45,26 +45,6 @@ gradle -PKAIJU_AUTOCATS_DIR=<path/to/autocats/dir> test
 gradle -PKAIJU_AUTO_REMOVE install
 ```
 
-Before first run, use your favorite text editor to open the `ghidraRun`
-script (or `ghidraRun.bat` on Windows) in the top level directory of
-your Ghidra installation. Then, in the script line under
-`# Launch Ghidra`, add the following to the empty quotes:
-```bash
--Djava.library.path=/path/to/Ghidra/Extensions/kaiju/os/<your_os_dir>
-```
-where `your_os_dir` is one of the following, depending
-on the architecture you are running:
-* `linux_x86_64` (Linux distributions)
-* `mac_x86_64` (Mac iOS)
-* `win_x86_64` (Windows 10+)
-
-As an example, on a typical 64-bit linux OS, `ghidraRun` (or
-`ghidraRun.bat` on Windows) should after editing look similar to:
-```bash
-# Launch Ghidra
-"${SCRIPT_DIR}"/support/launch.sh bg Ghidra "${MAXMEM}" "-Djava.library.path=/path/to/Ghidra/Extensions/kaiju/os/linux_x86_64" ghidra.GhidraRun "$@"
-```
-
 Optionally: To make use of the `kaijuRun` script, be sure to set the script
 with executable permission on Linux:
 ```bash
@@ -275,20 +255,26 @@ If you'd prefer to remove your old installation manually, perform a command like
 rm -rf $GHIDRA_INSTALL_DIR/Extensions/Ghidra/*kaiju*.zip $GHIDRA_INSTALL_DIR/Ghidra/Extensions/kaiju
 ```
 
-### Step 4: Set Java Parameters on GhidraRun Script Prior to Running
+### Troubleshooting
 
-Once installed, Ghidra must be restarted (if you installed via the
-graphical interface).
+#### Fixing Z3 libraries not found
 
-Prior to running Ghidra, however, we must tweak the parameters that
-the Java virtual machine runs with in order for Ghidra to find
-the pre-compiled Z3 binaries. At the moment we are not aware
-of any way to consistently auto-load these binaries across
-all platforms, due to both the way Java works at runtime
-and the way Ghidra extensions are typically installed
-via .zip files.
+Once Kaiju is installed, Ghidra must be restarted (if you installed
+via the graphical interface).
 
-Therefore, you will need to MANUALLY make a small change to
+Kaiju attempts to autoload the Z3 native libraries based on your
+operating system. The Status Check tool (at `Kaiju > Status Check`
+in the main Ghidra window) will check if Z3 libraries are found
+and loaded successfully. If you see a green check mark,
+tools like GhiHorn that require Z3 should "just work".
+
+However, if the libraries are not loaded properly, there are
+a couple of ways to try to fix it.
+
+**OPTION ONE**, if the autoload is unsuccessful (perhaps due to JVM
+security, etc.), you can let Ghidra know to add the kaiju
+library paths to the JVM runtime so they can be loaded.
+To do this, you will need to MANUALLY make a small change to
 the `ghidraRun` script of your Ghidra installation.
 This is a completely Ghidra-supported step, not a "hack",
 to allow custom configuration of the Java virtual machine
@@ -325,15 +311,25 @@ including this library path and load the Z3 libraries.
 If you install a new Ghidra version, you will need to repeat
 this process along with re-installing Kaiju.
 
-**NOTE**: if you use Z3 packages for your Linux distribution,
-as long as the Z3 binaries are installed in the typical
-library paths like `/usr/lib`, Java will likely be able to find
-and use the libraries from these locations instead of the prebuilt
-included in the Kaiju extension. In this case, updating
-the `ghidraRun` script may not be necessary -- but also,
+**OPTION TWO**: Particularly on Linux, the included prebuilt
+Z3 libraries are built for the latest Ubuntu LTS release.
+The libraries may not run properly on other distributions.
+You may however be able to install Z3 libraries directly
+from your distrubtion's package manager, and Java will load
+them since they are in system library paths like `/usr/lib`.
+In this case, updating the `ghidraRun` script may not be
+necessary -- but also,
 the system packages may be a different version of Z3 than
 supported by Kaiju. Therefore, certain Kaiju tools like GhiHorn
 may not work properly and we cannot promise being able
 to support or help with troubleshooting.
+
+**OPTION THREE**: If you want to ensure the same version of Z3
+we develop with, you can manually build Z3 for your particular
+platform/operating system/distribution. The Gradle build system
+can automatically build Z3 for your system if you build Kaiju
+from source; otherwise, build Z3 separately according to the Z3
+docs and then drop the built Z3 libraries into an appropriate
+system directory (or the os directory in Kaiju if you want to try).
       
 
