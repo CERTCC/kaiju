@@ -74,8 +74,17 @@ public class GhiHornPlugin extends ProgramPlugin implements AutoAnalysisManagerL
     
     static {
         try {
-            KaijuNativeLibraryLoaderUtil.loadLibrary("z3");
-            KaijuNativeLibraryLoaderUtil.loadLibrary("z3java");
+            if (Platform.CURRENT_PLATFORM == Platform.WIN_X86_64) {
+                // load dependents first if on windows
+                KaijuNativeLibraryLoaderUtil.loadLibrary("vcruntime140");
+                KaijuNativeLibraryLoaderUtil.loadLibrary("vcruntime140_1");
+                KaijuNativeLibraryLoaderUtil.loadLibrary("msvcp140");
+                KaijuNativeLibraryLoaderUtil.loadLibrary("libz3");
+                KaijuNativeLibraryLoaderUtil.loadLibrary("libz3java");
+            } else {
+                KaijuNativeLibraryLoaderUtil.loadLibrary("z3");
+                KaijuNativeLibraryLoaderUtil.loadLibrary("z3java");
+            }
             String z3status = "Z3 version: " + Version.getFullVersion();
             z3LibsFound = true;
         } catch (Throwable t) {

@@ -42,6 +42,7 @@ import docking.DialogComponentProvider;
 import docking.DockingWindowManager;
 import docking.widgets.checkbox.GCheckBox;
 import docking.widgets.label.GLabel;
+import ghidra.framework.Platform;
 import resources.ResourceManager;
 
 import kaiju.common.*;
@@ -62,8 +63,17 @@ class KaijuStatusCheckDialog extends DialogComponentProvider {
     
     static {
         try {
-            KaijuNativeLibraryLoaderUtil.loadLibrary("z3");
-            KaijuNativeLibraryLoaderUtil.loadLibrary("z3java");
+            if (Platform.CURRENT_PLATFORM == Platform.WIN_X86_64) {
+                // load dependents first if on windows
+                KaijuNativeLibraryLoaderUtil.loadLibrary("vcruntime140");
+                KaijuNativeLibraryLoaderUtil.loadLibrary("vcruntime140_1");
+                KaijuNativeLibraryLoaderUtil.loadLibrary("msvcp140");
+                KaijuNativeLibraryLoaderUtil.loadLibrary("libz3");
+                KaijuNativeLibraryLoaderUtil.loadLibrary("libz3java");
+            } else {
+                KaijuNativeLibraryLoaderUtil.loadLibrary("z3");
+                KaijuNativeLibraryLoaderUtil.loadLibrary("z3java");
+            }
             z3LibsFound = true;
         } catch (Throwable t) {
             z3LibsFound = false;
