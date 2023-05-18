@@ -31,6 +31,7 @@
  */
 package kaiju.tools.fse;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import docking.ActionContext;
@@ -107,7 +108,7 @@ public class FnSetExtractorPlugin extends Plugin implements KaijuLogger {
                 reload();
             }
         };
-        ImageIcon refreshIcon = Icons.REFRESH_ICON;
+        Icon refreshIcon = Icons.REFRESH_ICON;
         refreshAction.setDescription("Refresh the intersection table data");
         refreshAction.setToolBarData(new ToolBarData(refreshIcon));
         refreshAction.setHelpLocation(new HelpLocation("FnSetExtractorPlugin", "RefreshTable"));

@@ -68,7 +68,7 @@ class OOAnalyzerTest extends AbstractGhidraHeadedIntegrationTest {
         //env.getGhidraProject ().analyze (p, false);
 
         // And mark it as analyzed?  Ok ghidra whatever.
-        GhidraProgramUtilities.setAnalyzedFlag (p, true);
+        GhidraProgramUtilities.markProgramAnalyzed(p);
 
         plugin = env.addPlugin(OOAnalyzerGhidraPlugin.class);
 

@@ -303,7 +303,7 @@ public class GhiHornTestEnv {
             }
 
             // And mark it as analyzed? Ok ghidra whatever.
-            GhidraProgramUtilities.setAnalyzedFlag(p, true);
+            GhidraProgramUtilities.markProgramAnalyzed(p);
 
             return p;
 

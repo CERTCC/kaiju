@@ -33,6 +33,8 @@ package kaiju.tools.fnxrefs;
 
 import java.io.File;
 import java.lang.reflect.*;
+
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import docking.ActionContext;
@@ -131,7 +133,7 @@ public class FnXrefViewerPlugin extends ProgramPlugin implements DomainObjectLis
                 reload();
             }
         };
-        ImageIcon refreshIcon = Icons.REFRESH_ICON;
+        Icon refreshIcon = Icons.REFRESH_ICON;
         refreshAction.setDescription("Reruns the FnXref analyzer on the current program");
         refreshAction.setToolBarData(new ToolBarData(refreshIcon));
         refreshAction.setHelpLocation(new HelpLocation("FnXrefViewerPlugin", "ReAnalyze"));
@@ -168,7 +170,7 @@ public class FnXrefViewerPlugin extends ProgramPlugin implements DomainObjectLis
                 }
             }
         };
-        ImageIcon arrowIconC = Icons.ARROW_DOWN_RIGHT_ICON;
+        Icon arrowIconC = Icons.ARROW_DOWN_RIGHT_ICON;
         exportCSVAction.setDescription("Exports selected or entire function list to CSV format");
         exportCSVAction.setToolBarData(new ToolBarData(arrowIconC));
         exportCSVAction.setPopupMenuData(new MenuData(

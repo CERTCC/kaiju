@@ -61,7 +61,7 @@ public class GhidraHtmlNodeRenderer extends CoreHtmlNodeRenderer implements Node
         HashMap<String,String> linkattrs = new HashMap<>();
         linkattrs.put("rel","stylesheet");
         linkattrs.put("type","text/css");
-        linkattrs.put("href","../../shared/Frontpage.css");
+        linkattrs.put("href","help/shared/DefaultStyle.css");
         html.tag("link", linkattrs);
         html.line();
         html.tag("/head");

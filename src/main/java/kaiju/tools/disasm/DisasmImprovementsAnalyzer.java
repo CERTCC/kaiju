@@ -195,7 +195,7 @@ public class DisasmImprovementsAnalyzer extends AbstractAnalyzer implements Kaij
         // loop over the undefined addresses until either they are identified
         // or there's no heuristics left to run.
         // CancelledListener cancelledListener
-        GProgressBar progress = new GProgressBar​(null, true, true, true, 12);
+        GProgressBar progress = new GProgressBar(null, true, true, true, 12);
         progress.setMessage("Analyzing gaps...");
         progress.initialize(0);
         

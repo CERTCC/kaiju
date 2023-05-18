@@ -32,7 +32,8 @@
 package kaiju.tools.fnhash;
 
 import java.io.File;
-import javax.swing.ImageIcon;
+
+import javax.swing.Icon;
 
 import docking.ActionContext;
 import docking.action.DockingAction;
@@ -155,7 +156,7 @@ public class FnHashPlugin extends ProgramPlugin implements DomainObjectListener,
                 reload();
             }
         };
-        ImageIcon refreshIcon = Icons.REFRESH_ICON;
+        Icon refreshIcon = Icons.REFRESH_ICON;
         refreshAction.setDescription("Reruns the Fn2Hash analyzer on the current program");
         refreshAction.setToolBarData(new ToolBarData(refreshIcon));
         refreshAction.setHelpLocation(new HelpLocation("FnHashPlugin", "ReAnalyze"));
@@ -191,7 +192,7 @@ public class FnHashPlugin extends ProgramPlugin implements DomainObjectListener,
                 }
             }
         };
-        ImageIcon arrowIconC = Icons.ARROW_DOWN_RIGHT_ICON;
+        Icon arrowIconC = Icons.ARROW_DOWN_RIGHT_ICON;
         exportCSVAction.setDescription("Exports selected or entire function list to CSV format");
         exportCSVAction.setToolBarData(new ToolBarData(arrowIconC));
         exportCSVAction.setPopupMenuData(new MenuData(
@@ -220,7 +221,7 @@ public class FnHashPlugin extends ProgramPlugin implements DomainObjectListener,
                 }
             }
         };
-        ImageIcon arrowIcon = Icons.ARROW_DOWN_RIGHT_ICON;
+        Icon arrowIcon = Icons.ARROW_DOWN_RIGHT_ICON;
         exportYaraAction.setDescription("Exports selected or entire function list to YARA format");
         exportYaraAction.setToolBarData(new ToolBarData(arrowIcon));
         exportYaraAction.setPopupMenuData(new MenuData(
