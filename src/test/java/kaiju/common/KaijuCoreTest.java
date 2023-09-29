@@ -30,27 +30,13 @@
  * DM21-0792
  */
 
-package kaiju.common.di;
+package kaiju.common;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import org.junit.*;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-
-import java.io.IOException;
-import java.nio.file.Path;
-
 import generic.test.AbstractGenericTest;
-import ghidra.test.AbstractGhidraHeadlessIntegrationTest;
-import ghidra.test.TestEnv;
+import kaiju.common.di.GhidraDI;
 
 //@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class KaijuCoreTest extends AbstractGenericTest {
