@@ -18,7 +18,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        ghidra_version: [10.3, 10.3.1, 10.3.2, 10.3.3]
+        ghidra_version: [10.3, 10.3.1, 10.3.2, 10.3.3, 10.4]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
