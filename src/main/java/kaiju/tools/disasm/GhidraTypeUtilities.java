@@ -31,10 +31,7 @@
  */
 package kaiju.tools.disasm;
 
-import ghidra.app.cmd.disassemble.DisassembleCommand;
 import ghidra.program.model.address.Address;
-import ghidra.program.model.address.AddressRange;
-import ghidra.program.model.address.AddressRangeImpl;
 import ghidra.program.model.data.BuiltInDataTypeManager;
 import ghidra.program.model.data.CategoryPath;
 import ghidra.program.model.data.DataType;
@@ -43,8 +40,6 @@ import ghidra.program.model.listing.CodeUnit;
 import ghidra.program.model.listing.Data;
 import ghidra.program.model.listing.Instruction;
 import ghidra.program.model.listing.Listing;
-import ghidra.program.model.util.CodeUnitInsertionException;
-import ghidra.util.task.TaskMonitor;
 
 /**
  * A static class with utility functions for locating Ghidra

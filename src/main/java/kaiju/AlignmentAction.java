@@ -24,26 +24,9 @@ import docking.ActionContext;
 import docking.action.*;
 import ghidra.app.context.ListingActionContext;
 import ghidra.app.plugin.core.data.DataPlugin;
-import ghidra.app.util.datatype.DataTypeSelectionDialog;
-import ghidra.framework.plugintool.PluginTool;
 import ghidra.program.model.data.AlignmentDataType;
 import ghidra.program.model.data.DataType;
-import ghidra.program.model.listing.Data;
-import ghidra.util.data.DataTypeParser.AllowedDataTypes;
-
 import kaiju.common.di.GhidraDI;
-
-import java.lang.reflect.*;
-//     try
-//     {
-//       c.getDeclaredMethod("allowSwingToProcessEvents");
-//       try {
-//         c.getDeclaredMethod("allowSwingToProcessEvents").invoke(this);
-//       } catch (Exception e) {
-//         Msg.warn(this, "Error invoking function.");
-//     } catch(NoSuchMethodException e) {
-//       Msg.warn(this, "Unable to locate allowSwingToProcessEvents. The GUI may be irresponsive.");
-//     }
 
 /**
  * An action that allows the user to set an Alignment data type.
@@ -85,7 +68,7 @@ public class AlignmentAction extends DockingAction {
 			} catch (ClassNotFoundException e) {
 				//TODO
 			}
-			Class[] cArg = new Class[3];
+			Class<?>[] cArg = new Class[3];
 			cArg[0] = DataType.class;
 			cArg[1] = ListingActionContext.class;
 			cArg[2] = boolean.class;

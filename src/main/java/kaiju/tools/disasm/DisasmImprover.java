@@ -32,7 +32,6 @@
 package kaiju.tools.disasm;
 
 import ghidra.program.model.address.AddressRange;
-import ghidra.program.model.listing.CodeUnit;
 import ghidra.program.model.listing.Program;
 import ghidra.util.task.TaskMonitor;
 

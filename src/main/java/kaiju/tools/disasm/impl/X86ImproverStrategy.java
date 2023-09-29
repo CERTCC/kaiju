@@ -33,9 +33,7 @@ package kaiju.tools.disasm.impl;
 
 import ghidra.program.model.address.Address;
 import ghidra.program.model.address.AddressRange;
-import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.address.AddressSetView;
-import ghidra.program.model.listing.CodeUnit;
 import ghidra.program.model.listing.Listing;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.mem.Memory;

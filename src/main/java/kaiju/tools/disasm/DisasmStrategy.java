@@ -39,7 +39,6 @@ import ghidra.program.model.address.AddressRangeImpl;
 import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.address.AddressSetView;
 import ghidra.program.model.data.DataType;
-import ghidra.program.model.listing.CodeUnit;
 import ghidra.program.model.listing.Data;
 import ghidra.program.model.listing.Listing;
 import ghidra.program.model.listing.Program;
