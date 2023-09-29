@@ -32,7 +32,6 @@
 package kaiju.tools.fnhash;
 
 import java.io.File;
-import javax.swing.ImageIcon;
 
 import docking.ActionContext;
 import docking.action.DockingAction;
@@ -125,7 +124,6 @@ public class FnHashPlugin extends ProgramPlugin implements DomainObjectListener,
             createActions();
 
             this.openFnHashAction = new ActionBuilder("Open Fn2Hash", getName())
-                    .supportsDefaultToolContext(true)
                     .menuPath("&Kaiju", "Fn2Hash")
                     .onAction(c -> provider.setVisible(true))
                     .menuIcon(null)

@@ -169,7 +169,6 @@ public class GhiHornPlugin extends ProgramPlugin implements AutoAnalysisManagerL
             this.provider = new GhiHornProvider(tool, this, controllers);
 
             this.ghihornAction = new ActionBuilder("Open GhiHorn", getName())
-                    .supportsDefaultToolContext(true)
                     .menuPath("&Kaiju", "GhiHorn")
                     .onAction(c -> provider.setVisible(true))
                     .menuIcon(null)
