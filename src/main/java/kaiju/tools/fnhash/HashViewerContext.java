@@ -34,14 +34,14 @@ package kaiju.tools.fnhash;
 import java.util.List;
 import java.util.function.Predicate;
 
-import docking.ActionContext;
+import docking.DefaultActionContext;
 import ghidra.app.context.DataLocationListContext;
 import ghidra.program.model.listing.Data;
 import ghidra.program.model.listing.Program;
 import ghidra.program.util.ProgramLocation;
 import ghidra.util.table.GhidraTable;
 
-public class HashViewerContext extends ActionContext implements DataLocationListContext {
+public class HashViewerContext extends DefaultActionContext implements DataLocationListContext {
 
     private HashViewerProvider hashViewerProvider;
 
