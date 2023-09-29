@@ -1,5 +1,7 @@
 package kaiju.tools.ghihorn.decompiler;
 
+import kaiju.common.KaijuGhidraCompat;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -13,7 +15,6 @@ import ghidra.app.decompiler.parallel.ChunkingParallelDecompiler;
 import ghidra.app.decompiler.parallel.ParallelDecompiler;
 import ghidra.framework.options.ToolOptions;
 import ghidra.framework.plugintool.ServiceProvider;
-import ghidra.framework.plugintool.util.OptionsService;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.pcode.HighFunction;
@@ -96,15 +97,9 @@ public class GhiHornParallelDecompiler implements GhiHornDecompiler {
 
         DecompileOptions options;
         options = new DecompileOptions();
-        try {
-            OptionsService service = this.serviceProvider.getService(OptionsService.class);
-            if (service != null) {
-                ToolOptions opt = service.getOptions("Decompiler");
-                options.grabFromToolAndProgram(null, opt, program);
-            }
-        } catch (NullPointerException npx) {
 
-        }
+        ToolOptions opt = KaijuGhidraCompat.getToolOptions(this.serviceProvider, "Decompiler");
+        options.grabFromToolAndProgram(null, opt, program);
 
         decompiler.setOptions(options);
         decompiler.toggleCCode(true);

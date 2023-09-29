@@ -1,13 +1,15 @@
 package kaiju.tools.ghihorn.decompiler;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+
 import generic.cache.CountingBasicFactory;
 import ghidra.app.decompiler.DecompInterface;
 import ghidra.app.decompiler.DecompileOptions;
 import ghidra.framework.options.ToolOptions;
 import ghidra.framework.plugintool.ServiceProvider;
-import ghidra.framework.plugintool.util.OptionsService;
 import ghidra.program.model.listing.Program;
+import kaiju.common.KaijuGhidraCompat;
 
 public class DecompilerFactory extends CountingBasicFactory<DecompInterface> {
 
@@ -26,15 +28,12 @@ public class DecompilerFactory extends CountingBasicFactory<DecompInterface> {
             DecompileOptions options;
             options = new DecompileOptions();
             try {
-                final OptionsService service = serviceProvider.getService(OptionsService.class);
-                if (service != null) {
-                    final ToolOptions opt = service.getOptions("Decompiler");
-                    options.grabFromToolAndProgram(null, opt, program);
-                }
-            } catch (final NullPointerException npx) {
-                npx.printStackTrace();
-               return null;
-            }
+				ToolOptions opt = KaijuGhidraCompat.getToolOptions(serviceProvider, "Decompiler");
+                options.grabFromToolAndProgram(null, opt, program);
+			} catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException | SecurityException e) {
+				throw new RuntimeException("Unable to create decompiler");
+			}
 
             decompiler.setOptions(options);
             decompiler.toggleCCode(false);
