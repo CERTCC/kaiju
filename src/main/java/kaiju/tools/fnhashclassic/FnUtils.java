@@ -297,7 +297,7 @@ public class FnUtils {
       
  
       fep_cu = cuIter.next();
-      if (!fep_cu.contains(fep)) {
+      if (fep_cu != null && !fep_cu.contains(fep)) {
         //debug("Function entry point not in first CodeUnit!");
       }
      
