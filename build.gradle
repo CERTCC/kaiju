@@ -132,10 +132,6 @@ repositories {
 }
 
 dependencies {
-    //testRuntimeOnly('org.opentest4j:opentest4j:1.1.1')
-//     implementation(
-//         ':com.microsoft.z3:4.12.1.0'
-//     ) { because "Z3 is required to use Kaiju Ghihorn." }
 
     annotationProcessor 'systems.manifold:manifold-preprocessor:2023.1.27'
 
