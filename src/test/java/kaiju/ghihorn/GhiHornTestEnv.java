@@ -291,27 +291,19 @@ public class GhiHornTestEnv {
 
     public Program importTestProgram(File exe) throws FileNotFoundException {
 
+        // Import the program
+        Program p = env.getGhidraProject().importProgram(exe);
+        env.open(p);
         try {
-
-            // Import the program
-            Program p = env.getGhidraProject().importProgram(exe);
-            env.open(p);
-            try {
-                env.getGhidraProject().analyze(p, true);
-            } catch (NullPointerException npe) {
-                // this happens from time to time and it seems we can ignore it
-            }
-
-            // And mark it as analyzed? Ok ghidra whatever.
-            GhidraProgramUtilities.markProgramAnalyzed(p);
-
-            return p;
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
+            env.getGhidraProject().analyze(p, true);
+        } catch (NullPointerException npe) {
+            // this happens from time to time and it seems we can ignore it
         }
-        return null;
+
+        // And mark it as analyzed? Ok ghidra whatever.
+        GhidraProgramUtilities.markProgramAnalyzed(p);
+
+        return p;
     }
 
     /**
