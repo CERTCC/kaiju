@@ -134,8 +134,9 @@ repositories {
 
 dependencies {
 
-    annotationProcessor 'systems.manifold:manifold-preprocessor:2023.1.27'
-
+    annotationProcessor 'systems.manifold:manifold-preprocessor:2023.1.28'
+    testAnnotationProcessor 'systems.manifold:manifold-preprocessor:2023.1.28'
+    
     testImplementation(
         'junit:junit:4.12', // needed on classpath to support junit 5 vintage
         'org.junit.jupiter:junit-jupiter-api:5.9.2',
