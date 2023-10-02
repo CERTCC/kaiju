@@ -660,7 +660,9 @@ public class GhiHornTest extends AbstractGhidraHeadedIntegrationTest {
         }
 
         @Test
-        @Disabled
+        // This test is broken on Ghidra 10.4 for unknown reasons. Jeff is
+        // looking into it.
+        #if GHIDRA_10_4 == "true" @Disabled #endif
         public void testHornBlockVariables() {
 
             // ************************************************************************
