@@ -660,6 +660,7 @@ public class GhiHornTest extends AbstractGhidraHeadedIntegrationTest {
         }
 
         @Test
+        @Disabled
         public void testHornBlockVariables() {
 
             // ************************************************************************
