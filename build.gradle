@@ -127,7 +127,9 @@ if (VersionNumber.parse( gradle.gradleVersion ) <= VersionNumber.parse ("6.8.0")
 compileJava {
     options.compilerArgs << '-AGHIDRA_10_4=' + (VersionNumber.parse( ghidraVersion ) >= VersionNumber.parse("10.4"))  
 }
-
+compileTestJava {
+    options.compilerArgs << '-AGHIDRA_10_4=' + (VersionNumber.parse( ghidraVersion ) >= VersionNumber.parse("10.4"))  
+}
 repositories {
     mavenCentral()
 }
