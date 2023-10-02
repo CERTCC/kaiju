@@ -124,8 +124,9 @@ if (VersionNumber.parse( gradle.gradleVersion ) <= VersionNumber.parse ("6.8.0")
 }
 
 // Export GHIDRA_10_4 for conditional compilation
-// Note: VersionNumber is supposed to be deprecated in gradle 9... annoying
-project.ext.GHIDRA_10_4 = VersionNumber.parse( ghidraVersion ) >= VersionNumber.parse("10.4")
+compileJava {
+    options.compilerArgs << '-AGHIDRA_10_4=' + (VersionNumber.parse( ghidraVersion ) >= VersionNumber.parse("10.4"))  
+}
 
 repositories {
     mavenCentral()
