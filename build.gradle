@@ -133,6 +133,8 @@ dependencies {
 //         ':com.microsoft.z3:4.12.1.0'
 //     ) { because "Z3 is required to use Kaiju Ghihorn." }
 
+    annotationProcessor 'systems.manifold:manifold-preprocessor:2023.1.27'
+
     testImplementation(
         'junit:junit:4.12', // needed on classpath to support junit 5 vintage
         'org.junit.jupiter:junit-jupiter-api:5.9.2',
@@ -143,6 +145,11 @@ dependencies {
         'org.junit.jupiter:junit-jupiter-engine:5.9.2',
         'org.junit.vintage:junit-vintage-engine:5.9.2'
     )
+}
+
+tasks.withType(JavaCompile) {
+    // If you DO NOT define a module-info.java file:
+    options.compilerArgs += ['-Xplugin:Manifold', '-AGHIDRA_10_4=true']
 }
 
 // don't include files not needed for runtime!
