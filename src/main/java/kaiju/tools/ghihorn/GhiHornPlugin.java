@@ -131,12 +131,6 @@ public class GhiHornPlugin extends ProgramPlugin implements AutoAnalysisManagerL
         this.tool.executeBackgroundCommand(cmd, currentProgram);
     }
 
-    public void cancel() {
-        if (this.tool != null) {
-            this.tool.terminateBackgroundCommands(false);
-        }
-    }
-
     @Override
     public boolean goTo(Address addr) {
         return super.goTo(addr);
@@ -260,7 +254,7 @@ public class GhiHornPlugin extends ProgramPlugin implements AutoAnalysisManagerL
     }
 
     @Override
-    public void analysisEnded(AutoAnalysisManager manager) {
-        updateEntryPoints();
+    public void analysisEnded(AutoAnalysisManager manager, boolean isCancelled) {
+        if (!isCancelled) updateEntryPoints();
     }
 }

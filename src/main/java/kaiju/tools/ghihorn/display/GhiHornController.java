@@ -117,8 +117,8 @@ public abstract class GhiHornController implements GhiHornCommandListener {
 
             // If there are no further commands to process, then terminate
             if (cmdList.isEmpty()) {
-                this.plugin.getProvider().endAnalysis(false);
-                this.plugin.cancel();
+                this.plugin.getProvider().endAnalysis(true);
+                this.plugin.getTool().cancelCurrentTask();
                 status(getControllerName() + " completed.");
             }
 
