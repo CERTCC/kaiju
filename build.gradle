@@ -123,6 +123,10 @@ if (VersionNumber.parse( gradle.gradleVersion ) <= VersionNumber.parse ("6.8.0")
     throw new GradleException("CERT Kaiju requires at least gradle version 6.8.0. Please update gradle and retry.")
 }
 
+// Export GHIDRA_10_4 for conditional compilation
+// Note: VersionNumber is supposed to be deprecated in gradle 9... annoying
+project.ext.GHIDRA_10_4 = VersionNumber.parse( ghidraVersion) >= VersionNumber.parse("10.4")
+
 repositories {
     mavenCentral()
 }
@@ -149,7 +153,7 @@ dependencies {
 
 tasks.withType(JavaCompile) {
     // If you DO NOT define a module-info.java file:
-    options.compilerArgs += ['-Xplugin:Manifold', '-AGHIDRA_10_4=true']
+    options.compilerArgs += ['-Xplugin:Manifold']
 }
 
 // don't include files not needed for runtime!
