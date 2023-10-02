@@ -253,7 +253,7 @@ public class GhiHornPlugin extends ProgramPlugin implements AutoAnalysisManagerL
 
     }
 
-#if GHIDRA_10_4
+#if GHIDRA_10_4 == "true"
     @Override
     public void analysisEnded(AutoAnalysisManager manager, boolean isCancelled) {
         if (!isCancelled) updateEntryPoints();

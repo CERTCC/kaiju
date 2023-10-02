@@ -34,7 +34,7 @@ package kaiju.tools.fnxrefs;
 import java.util.List;
 import java.util.function.Predicate;
 
-#if GHIDRA_10_4
+#if GHIDRA_10_4 == "true"
 import docking.DefaultActionContext;
 #endif
 import docking.ActionContext;
@@ -44,7 +44,7 @@ import ghidra.program.model.listing.Program;
 import ghidra.program.util.ProgramLocation;
 import ghidra.util.table.GhidraTable;
 
-public class FnXrefViewerContext extends #if GHIDRA_10_4 DefaultActionContext #else ActionContext #endif implements DataLocationListContext {
+public class FnXrefViewerContext extends #if GHIDRA_10_4 == "true" DefaultActionContext #else ActionContext #endif implements DataLocationListContext {
 
     private FnXrefViewerProvider xrefViewerProvider;
 
