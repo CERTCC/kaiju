@@ -473,6 +473,7 @@ test {
     testLogging {
         events "passed", "skipped", "failed"
         exceptionFormat = 'full'
+        showStackTraces = true
     }
     
     beforeSuite { descriptor ->
