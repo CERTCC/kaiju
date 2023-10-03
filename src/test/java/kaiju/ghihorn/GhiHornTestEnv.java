@@ -21,10 +21,7 @@ import generic.stl.Pair;
 import ghidra.app.decompiler.DecompInterface;
 import ghidra.app.decompiler.DecompileOptions;
 import ghidra.app.decompiler.DecompileResults;
-import ghidra.app.plugin.core.analysis.AnalysisBackgroundCommand;
-import ghidra.app.plugin.core.analysis.AutoAnalysisManager;
 import ghidra.base.project.GhidraProject;
-import ghidra.framework.cmd.Command;
 import ghidra.program.database.ProgramBuilder;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Function;
@@ -302,19 +299,10 @@ public class GhiHornTestEnv {
         Program p = env.getGhidraProject().importProgram(exe);
         env.open(p);
 
-		AutoAnalysisManager analysisMgr = AutoAnalysisManager.getAnalysisManager(p);
-		analysisMgr.reAnalyzeAll(null);
+        env.getGhidraProject().analyze(p, true);
 
-		Command cmd = new AnalysisBackgroundCommand(analysisMgr, false);
-		var tool = env.getTool();
-        tool.execute(cmd, p);
-		
-        while (tool.isExecutingCommand()) {
-            try {
-                Msg.debug(this, "Waiting for analysis to complete");
-                wait(1000);
-            } catch (InterruptedException e) {}
-        }
+        // And mark it as analyzed? Ok ghidra whatever.
+        GhidraProgramUtilities.markProgramAnalyzed(p);
 
         return p;
     }
