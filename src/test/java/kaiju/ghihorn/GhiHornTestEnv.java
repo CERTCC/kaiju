@@ -298,11 +298,8 @@ public class GhiHornTestEnv {
         // Import the program
         Program p = env.getGhidraProject().importProgram(exe);
         env.open(p);
-        try {
-            env.getGhidraProject().analyze(p, true);
-        } catch (NullPointerException npe) {
-            // this happens from time to time and it seems we can ignore it
-        }
+
+        env.getGhidraProject().analyze(p, true);
 
         // And mark it as analyzed? Ok ghidra whatever.
         GhidraProgramUtilities.markProgramAnalyzed(p);
