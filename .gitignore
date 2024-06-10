@@ -85,6 +85,3 @@ data/fileopen1.exe
 *.code-workspace
 data/apidb_src/kernel32.cpp
 .project
-gradlew
-gradle/wrapper/gradle-wrapper.properties
-gradlew.bat
