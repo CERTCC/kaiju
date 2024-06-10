@@ -304,19 +304,16 @@ public class FnHashPlugin extends ProgramPlugin implements DomainObjectListener,
             for (int i = 0; i < ev.numRecords(); ++i) {
                 DomainObjectChangeRecord doRecord = ev.getChangeRecord(i);
                 Object newValue = doRecord.getNewValue();
-                switch (#if GHIDRA_11_1 == "true" doRecord.getEventType().getId() #else doRecord.getEventType() #endif) {
-                    case ChangeManager.DOCR_FUNCTION_REMOVED:
-                        ProgramChangeRecord pcRec = (ProgramChangeRecord) doRecord;
-                        provider.remove(pcRec.getStart(), pcRec.getEnd());
-                        break;
-                    case ChangeManager.DOCR_FUNCTION_ADDED:
-                        if (newValue instanceof Function) {
-                            provider.add((Function) newValue);
-                        }
-                        break;
-                    default:
-                        //Msg.info(this, "Unhandled event type: " + doRecord.getEventType());
-                        break;
+                var et = doRecord.getEventType();
+                if (et == ChangeManager.DOCR_FUNCTION_REMOVED) {
+                    ProgramChangeRecord pcRec = (ProgramChangeRecord) doRecord;
+                    provider.remove(pcRec.getStart(), pcRec.getEnd());
+                } else if (et == ChangeManager.DOCR_FUNCTION_ADDED) {
+                    if (newValue instanceof Function) {
+                        provider.add((Function) newValue);
+                    }
+                } else {
+                    //Msg.info(this, "Unhandled event type: " + doRecord.getEventType());
                 }
             }
         }
