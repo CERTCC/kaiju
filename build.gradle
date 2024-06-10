@@ -122,12 +122,14 @@ if (VersionNumber.parse( gradle.gradleVersion ) <= VersionNumber.parse ("6.8.0")
     throw new GradleException("CERT Kaiju requires at least gradle version 6.8.0. Please update gradle and retry.")
 }
 
-// Export GHIDRA_10_4 for conditional compilation
+// Export GHIDRA_10_4 and _11_1 for conditional compilation
 compileJava {
-    options.compilerArgs << '-AGHIDRA_10_4=' + (VersionNumber.parse( ghidraVersion ) >= VersionNumber.parse("10.4"))  
+    options.compilerArgs << '-AGHIDRA_10_4=' + (VersionNumber.parse( ghidraVersion ) >= VersionNumber.parse("10.4")) \
+                         << '-AGHIDRA_11_1=' + (VersionNumber.parse( ghidraVersion ) >= VersionNumber.parse("11.1"))
 }
 compileTestJava {
-    options.compilerArgs << '-AGHIDRA_10_4=' + (VersionNumber.parse( ghidraVersion ) >= VersionNumber.parse("10.4"))  
+    options.compilerArgs << '-AGHIDRA_10_4=' + (VersionNumber.parse( ghidraVersion ) >= VersionNumber.parse("10.4")) \
+                         << '-AGHIDRA_11_1=' + (VersionNumber.parse( ghidraVersion ) >= VersionNumber.parse("11.1"))
 }
 repositories {
     mavenCentral()

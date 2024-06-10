@@ -304,7 +304,7 @@ public class FnHashPlugin extends ProgramPlugin implements DomainObjectListener,
             for (int i = 0; i < ev.numRecords(); ++i) {
                 DomainObjectChangeRecord doRecord = ev.getChangeRecord(i);
                 Object newValue = doRecord.getNewValue();
-                switch (doRecord.getEventType()) {
+                switch (#if GHIDRA_11_1 == "true" doRecord.getEventType().getId() #else doRecord.getEventType() #endif) {
                     case ChangeManager.DOCR_FUNCTION_REMOVED:
                         ProgramChangeRecord pcRec = (ProgramChangeRecord) doRecord;
                         provider.remove(pcRec.getStart(), pcRec.getEnd());
