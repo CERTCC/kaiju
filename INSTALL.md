@@ -12,7 +12,7 @@ This release of CERT Kaiju supports Ghidra 10.3, 10.4, and 11,
 and the following dependencies:
 
 - [Ghidra](https://ghidra-sre.org) 10.3.x, 10.4.x, 11.0.x, 11.1.x
-- [gradle](https://gradle.org/install/) 8.5+
+- [gradle](https://gradle.org/install/) 7.6+
 - [GSON](https://github.com/google/gson) 2.8.6 (handled automatically by gradle)
 - [JOpt Simple](https://github.com/jopt-simple/jopt-simple) 5.0.4 (handled automatically by gradle)
 - Java 17+ (we recommend [OpenJDK 17](https://openjdk.java.net/install/))
