@@ -18,14 +18,14 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        ghidra_version: ["10.3", "10.3.1", "10.3.2", "10.3.3", "10.4", "11.0", "11.0.1", "11.0.2", "11.0.3", "11.1"]
+        ghidra_version: ["10.3", "10.3.1", "10.3.2", "10.3.3", "10.4", "11.0", "11.0.1", "11.0.2", "11.0.3", "11.1", "11.1.1", "11.1.2"]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
-    - name: Set up JDK 17
+    - name: Set up JDK 21
       uses: actions/setup-java@v3
       with:
-        java-version: '17'
+        java-version: '21'
         distribution: 'temurin'
     - name: Download Ghidra ${{ matrix.ghidra_version }}
       uses: robinraju/release-downloader@v1.7
