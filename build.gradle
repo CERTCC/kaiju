@@ -200,8 +200,16 @@ task copyToLib(type: Copy) {
         from configurations.joptDependency
         into "lib"
     }
-    from ("build/cmake/z3/linux-amd64/com.microsoft.z3.jar")
-    into "lib"
+
+    // This will copy com.microsoft.z3.jar without knowing the architecture directory
+    from fileTree('build/cmake/z3') {
+        include '**/com.microsoft.z3.jar'
+    }
+    into 'lib'
+    eachFile {
+        it.path = it.name
+    }
+    includeEmptyDirs = false
 }
 
 // BEGIN: if user gives flag, skip building Z3
