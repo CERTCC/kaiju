@@ -80,26 +80,6 @@ OperatingSystem os = org.gradle.nativeplatform.platform.internal.DefaultNativePl
 // change this to set the version of Z3 we're using
 String z3Version = "4.12.1"
 
-def ghidraVersion;
-def minor;
-String[] str;
-str = ghidraInstallDir.split('_');
-for( String values : str )
-if (values =~ '[0-9]{1,}\\.[0-9]{1,}(\\.[0-9]{1,})?') {
-    ghidraVersion = values;
-    String[] substr = values.split('\\.');
-    minor = substr[1] as int;
-};
-if (minor && minor < 2) {
-    // we target Java 11 LTS for old Ghidra
-    sourceCompatibility = 1.11
-    targetCompatibility = 1.11
-} else {
-    // we target Java 17 LTS for Ghidra 10.2+
-    sourceCompatibility = 1.17
-    targetCompatibility = 1.17
-}
-
 def autocatsDir
 if (System.env.KAIJU_AUTOCATS_DIR) {
 	autocatsDir = System.env.KAIJU_AUTOCATS_DIR
@@ -123,6 +103,7 @@ if (VersionNumber.parse( gradle.gradleVersion ) <= VersionNumber.parse ("6.8.0")
 }
 
 // Export GHIDRA_10_4 and _11_1 for conditional compilation
+def ghidraVersion = project.ext.ghidra_version;
 compileJava {
     options.compilerArgs << '-AGHIDRA_10_4=' + (VersionNumber.parse( ghidraVersion ) >= VersionNumber.parse("10.4")) \
                          << '-AGHIDRA_11_1=' + (VersionNumber.parse( ghidraVersion ) >= VersionNumber.parse("11.1"))
