@@ -69,4 +69,5 @@ jobs:
       env:
         GHIDRA_INSTALL_DIR: '${{ github.workspace }}/ghidra_${{ matrix.ghidra_version }}_PUBLIC/'
       run: |
-          ./kaijuRun fn2hash /bin/ls
+          cp /bin/ls /tmp/ls
+          ./kaijuRun fn2hash /tmp/ls
