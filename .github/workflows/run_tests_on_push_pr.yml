@@ -71,3 +71,4 @@ jobs:
       run: |
           cp /bin/ls /tmp/ls
           ./kaijuRun fn2hash /tmp/ls
+          test -f /tmp/ls.FnHashes.csv
