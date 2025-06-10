@@ -49,6 +49,20 @@ if [ -z "$GHIDRA_INSTALL_DIR" ] ; then
 fi
 
 ProgName=$(basename $0)
+
+# Generate a unique temporary directory and project name
+TEMP_DIR=$(mktemp -d)
+TEMP_PROJ="KaijuHeadlessProj_$$_$(date +%s)"
+
+# Cleanup function to remove temporary directory
+cleanup() {
+    if [ -d "$TEMP_DIR" ]; then
+        rm -rf "$TEMP_DIR"
+    fi
+}
+
+# Set trap to cleanup on exit
+trap cleanup EXIT
   
 sub_help(){
     echo "Usage: $ProgName <subcommand> [options]"
@@ -64,7 +78,7 @@ sub_help(){
 }
 
 sub_version(){
-    $GHIDRA_INSTALL_DIR/support/analyzeHeadless /tmp tmpKaijuHeadlessProj -okToDelete -deleteProject -postScript KaijuVersionPrinterHeadless.java
+    $GHIDRA_INSTALL_DIR/support/analyzeHeadless $TEMP_DIR $TEMP_PROJ -okToDelete -deleteProject -postScript KaijuVersionPrinterHeadless.java
 }
   
 sub_fn2hash(){
@@ -89,7 +103,7 @@ sub_fn2hash(){
         *)
             echo "Running 'fn2hash' subcommand."
             echo "First arg is '$1'."
-            $GHIDRA_INSTALL_DIR/support/analyzeHeadless /tmp tmpKaijuHeadlessProj -okToDelete -deleteProject -import $1 -preScript KaijuSetupScript.java -postScript KaijuExportCSVHeadless.java $1.FnHashes.csv
+            $GHIDRA_INSTALL_DIR/support/analyzeHeadless $TEMP_DIR $TEMP_PROJ -okToDelete -deleteProject -import $1 -preScript KaijuSetupScript.java -postScript KaijuExportCSVHeadless.java $1.FnHashes.csv
             ;;
     esac
 }
@@ -116,7 +130,7 @@ sub_fn2yara(){
         *)
             echo "Running 'fn2yara' subcommand."
             echo "First arg is '$1'."
-            $GHIDRA_INSTALL_DIR/support/analyzeHeadless /tmp tmpKaijuHeadlessProj -okToDelete -deleteProject -import $1 -preScript KaijuSetupScript.java -postScript KaijuExportYaraHeadless.java $1.yara
+            $GHIDRA_INSTALL_DIR/support/analyzeHeadless $TEMP_DIR $TEMP_PROJ -okToDelete -deleteProject -import $1 -preScript KaijuSetupScript.java -postScript KaijuExportYaraHeadless.java $1.yara
             ;;
     esac
 }
@@ -143,7 +157,7 @@ sub_xrefs(){
         *)
             echo "Running 'xrefs' subcommand."
             echo "First arg is '$1'."
-            $GHIDRA_INSTALL_DIR/support/analyzeHeadless /tmp tmpKaijuHeadlessProj -okToDelete -deleteProject -import $1 -preScript KaijuSetupScript.java -postScript KaijuExportXrefsToCSVHeadless.java $1.Xref.csv
+            $GHIDRA_INSTALL_DIR/support/analyzeHeadless $TEMP_DIR $TEMP_PROJ -okToDelete -deleteProject -import $1 -preScript KaijuSetupScript.java -postScript KaijuExportXrefsToCSVHeadless.java $1.Xref.csv
             ;;
     esac
 }
@@ -170,7 +184,7 @@ sub_ghihorn(){
         *)
             echo "Running 'ghihorn' subcommand."
             echo "First arg is '$1'."
-            $GHIDRA_INSTALL_DIR/support/analyzeHeadless /tmp tmpKaijuHeadlessProj -okToDelete -deleteProject -import $1 -preScript KaijuSetupScript.java -postScript GhiHornHeadlessTool.java
+            $GHIDRA_INSTALL_DIR/support/analyzeHeadless $TEMP_DIR $TEMP_PROJ -okToDelete -deleteProject -import $1 -preScript KaijuSetupScript.java -postScript GhiHornHeadlessTool.java
             ;;
     esac
 }

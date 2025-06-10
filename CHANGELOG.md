@@ -1,5 +1,10 @@
 # Current Release
 
+## 250610
+- Improvements:
+* kaijuRun script now uses unique temporary directories to prevent conflicts
+* Added automatic cleanup of temporary directories on kaijuRun exit
+
 ## 250417
 - Improvements:
 * Support for Ghidra 11.3.2
