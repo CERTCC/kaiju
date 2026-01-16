@@ -44,7 +44,7 @@ Ghidra's graphical interface, but it is also possible to manually
 unzip into the appropriate directory to install.
 
 CERT Kaiju requires the following runtime dependencies:
-- [Ghidra](https://ghidra-sre.org) 10.3.x, 10.4.x, 11.0.x, 11.1.x, 11.2.x, 11.3.x, or 11.4.x
+- [Ghidra](https://ghidra-sre.org) 10.3.x, 10.4.x, 11.0.x, 11.1.x, 11.2.x, 11.3.x, 11.4.x, 12.0.x
 - JDK 21 (or 17 for older Ghidra releases)
 - [Z3](https://github.com/Z3Prover/z3) including Z3 Java bindings .jar
 
