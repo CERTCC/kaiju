@@ -1,5 +1,9 @@
 # Current Release
 
+## 260116
+- Improvements:
+* Support for Ghidra 12.0.1
+
 ## 251218
 - Improvements:
 * Support for Ghidra 12.0
