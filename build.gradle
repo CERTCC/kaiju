@@ -464,7 +464,7 @@ test {
         .collect { file(osDir.name + "/" + it.name )}
         .join(':')
 
-    jvmArgs = ['-Djava.awt.headless=true',
+    jvmArgs = [
                 // add-exports needed prior to Ghidra 10.3 to address sun.awt not exported in JDK 17+
                 '--add-exports=java.desktop/sun.awt=ALL-UNNAMED',
                 // add the kaiju os directories to load z3 library to run tests
