@@ -10,7 +10,7 @@ import java.util.Set;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.Quantifier;
 import com.microsoft.z3.Sort;
-import org.python.google.common.base.Verify;
+import com.google.common.base.Verify;
 import kaiju.tools.ghihorn.answer.graph.GhiHornAnswerGraph;
 import kaiju.tools.ghihorn.answer.graph.GhiHornAnswerGraphEdge;
 import kaiju.tools.ghihorn.answer.graph.GhiHornAnswerGraphVertex;

@@ -1,6 +1,6 @@
 package kaiju.tools.ghihorn.api;
 
-import org.python.google.common.base.Verify;
+import com.google.common.base.Verify;
 import ghidra.program.model.listing.Function;
 import kaiju.tools.ghihorn.tools.apianalyzer.ApiFunction;
 

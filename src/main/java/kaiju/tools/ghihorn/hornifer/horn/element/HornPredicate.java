@@ -16,7 +16,7 @@ import com.microsoft.z3.BoolSort;
 import com.microsoft.z3.Expr;
 import com.microsoft.z3.FuncDecl;
 import com.microsoft.z3.Sort;
-import org.python.google.common.base.Verify;
+import com.google.common.base.Verify;
 import ghidra.program.model.address.Address;
 import ghidra.program.util.ProgramLocation;
 import kaiju.tools.ghihorn.hornifer.block.HornBlock;
