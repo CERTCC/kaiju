@@ -469,6 +469,13 @@ test {
                 '--add-exports=java.desktop/sun.awt=ALL-UNNAMED',
                 // add the kaiju os directories to load z3 library to run tests
                 '-Djava.library.path=' + ghidraInstallDir + '/Ghidra/Extensions/kaiju/lib/:' + osDirNames]
+
+    // Ghidra 12.1+ requires the serial filter factory to be set before Application.initializeApplication()
+    // is called, otherwise setSerialFilterFactory throws IllegalStateException. Setting this property
+    // causes the JVM to install Ghidra's factory at startup, before any test code runs.
+    if (VersionNumber.parse(ghidraVersion) >= VersionNumber.parse("12.1")) {
+        jvmArgs += '-Djdk.serialFilterFactory=ghidra.framework.remote.GhidraSerialFilterFactory'
+    }
     useJUnitPlatform()
     
     maxHeapSize = '2G'

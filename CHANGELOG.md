@@ -3,6 +3,8 @@
 ## 260515
 - Improvements:
 * Support for Ghidra 12.1
+- Bugfixes:
+* Fix test runner crash on Ghidra 12.1+ caused by GhidraSerialFilterFactory IllegalStateException
 
 ## 260309
 - Improvements:
