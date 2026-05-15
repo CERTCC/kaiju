@@ -41,6 +41,8 @@ Update kaiju to support a new Ghidra version. The argument is the version number
 
 9. **Commit and create PR** — commit all changes on a branch named `ghidra-{version}`, push to the user's fork, and create a PR to CERTCC/kaiju.
 
+10. **Monitor PR checks** — watch the CI checks on the PR and report back to the user when they complete. Use `gh pr checks <PR_NUMBER> --repo CERTCC/kaiju` to check status.
+
 ## Notes
 
 - Previous updates typically only touched the 3 config files (workflows + changelog + README). Source changes are rare and usually involve Jython/Guava or Ghidra API removals.
