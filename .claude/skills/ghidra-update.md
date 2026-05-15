@@ -39,9 +39,27 @@ Update kaiju to support a new Ghidra version. The argument is the version number
    ```
    Also verify backward compatibility by building against the previous version.
 
-9. **Commit and create PR** — commit all changes on a branch named `ghidra-{version}`, push to the user's fork, and create a PR to CERTCC/kaiju.
+9. **Run the tests** — test against both the new and previous Ghidra versions:
+   ```
+   KAIJU_AUTOCATS_DIR=~/Projects/autocats GHIDRA_INSTALL_DIR=~/Ghidra/ghidra_{version}_PUBLIC ./gradlew -PKAIJU_SKIP_Z3_BUILD --build-cache test
+   ```
+   A common failure mode is the test JVM crashing with `Executed 0 tests` and exit code 255. For Ghidra 12.1+, this was caused by `GhidraSerialFilterFactory` calling `ObjectInputFilter.Config.setSerialFilterFactory()` which can only be called once per JVM — see the Known Issues section below.
 
-10. **Monitor PR checks** — watch the CI checks on the PR and report back to the user when they complete. Use `gh pr checks <PR_NUMBER> --repo CERTCC/kaiju` to check status.
+10. **Commit and create PR** — commit all changes on a branch named `ghidra-{version}`, push to the user's fork, and create a PR to CERTCC/kaiju. You may need `gh auth switch` to use the correct GitHub account, and `dangerouslyDisableSandbox: true` for push commands.
+
+11. **Monitor PR checks** — watch the CI checks on the PR and report back to the user when they complete. Use `gh pr checks <PR_NUMBER> --repo CERTCC/kaiju` to check status. If CI fails, check the logs with `gh api repos/CERTCC/kaiju/actions/jobs/<JOB_ID>/logs`.
+
+## Known Issues
+
+### Ghidra 12.1: SerialFilterFactory test crash
+
+Ghidra 12.1 introduced `GhidraSerialFilterFactory` which calls `ObjectInputFilter.Config.setSerialFilterFactory()` during `Application.initializeApplication()`. This can only be called once per JVM. In test environments, Ghidra's `AbstractGenericTest` constructor calls `initializeApplication()`, and if it runs more than once (e.g., across test classes in the same JVM), the second call throws `IllegalStateException: Cannot replace filter factory`. This causes `Executed 0 tests` with exit code 255.
+
+**Fix**: Set `-Djdk.serialFilterFactory=ghidra.framework.remote.GhidraSerialFilterFactory` as a JVM arg in `build.gradle`'s `test` block, conditional on Ghidra >= 12.1. This installs the factory at JVM startup, before any test code calls `setSerialFilterFactory()`.
+
+### Ghidra 12.1: Jython removed from classpath
+
+Ghidra 12.1 moved Jython to a separate extension. Code that imported `org.python.google.common.base.Verify` (Jython's bundled Guava) must be changed to `com.google.common.base.Verify` (regular Guava, already a dependency).
 
 ## Notes
 
@@ -49,3 +67,4 @@ Update kaiju to support a new Ghidra version. The argument is the version number
 - The Manifold preprocessor flags (`GHIDRA_10_4`, `GHIDRA_11_1`) in `build.gradle` are for compile-time conditional code. Add a new flag only if there's an API break that affects some versions but not others.
 - `INSTALL.md` and `Dockerfile` are updated separately and may be behind the current version range.
 - The `dangerouslyDisableSandbox: true` flag is needed for any bash commands that touch `~/.gradle/` or `~/.gitconfig` (the sandbox blocks writes there).
+- The `autocats` test directory is at `~/Projects/autocats` on the local machine.
