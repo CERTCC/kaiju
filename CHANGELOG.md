@@ -1,5 +1,9 @@
 # Current Release
 
+## 260608
+- Improvements:
+* Support for Ghidra 12.1.2
+
 ## 260515
 - Improvements:
 * Support for Ghidra 12.1
