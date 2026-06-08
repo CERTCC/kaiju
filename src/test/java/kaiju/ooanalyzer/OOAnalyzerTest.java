@@ -35,11 +35,14 @@ package kaiju.ooanalyzer;
 //import static org.junit.Assert.assertTrue;
 
 import java.nio.file.Path;
+import ghidra.app.util.importer.ProgramLoader;
+import ghidra.app.util.opinion.LoadResults;
 import ghidra.program.model.listing.Program;
 import ghidra.program.util.GhidraProgramUtilities;
 import ghidra.test.AbstractGhidraHeadedIntegrationTest;
 import ghidra.test.TestEnv;
 import ghidra.util.Msg;
+import ghidra.util.task.TaskMonitor;
 import kaiju.common.di.GhidraDI;
 import kaiju.tools.ooanalyzer.OOAnalyzerGhidraPlugin;
 
@@ -55,38 +58,31 @@ class OOAnalyzerTest extends AbstractGhidraHeadedIntegrationTest {
         env = new TestEnv();
         setErrorGUIEnabled(false);
 
-        // Import the program
-        Program p = env.getGhidraProject().importProgram(exe.toFile());
+        try (LoadResults<Program> results = ProgramLoader.builder()
+                .source(exe.toFile())
+                .project(env.getGhidraProject().getProject())
+                .monitor(TaskMonitor.DUMMY)
+                .load()) {
+            Program p = results.getPrimaryDomainObject(this);
 
-        // Open in the tool
-        env.open(p);
+            env.open(p);
+            GhidraProgramUtilities.markProgramAnalyzed(p);
 
-        // Analyze it
-        // NOTE: get heap exhaustion errors when doing analysis with Fn2Hash, etc.
-        // Not necessary to analyze to check JSON importer, but consider
-        // for future tests.
-        //env.getGhidraProject ().analyze (p, false);
+            plugin = env.addPlugin(OOAnalyzerGhidraPlugin.class);
 
-        // And mark it as analyzed?  Ok ghidra whatever.
-        GhidraProgramUtilities.markProgramAnalyzed(p);
+            OOAnalyzerGhidraPlugin.ImportCommand cmd = plugin.configureAndExecute(json.toFile(), useNs);
 
-        plugin = env.addPlugin(OOAnalyzerGhidraPlugin.class);
+            while (!cmd.getCompleted()) {
+                Msg.debug(this, "Sleeping until completed.");
+                Thread.sleep(1000);
+            }
 
-        // Import json.
-        OOAnalyzerGhidraPlugin.ImportCommand cmd = plugin.configureAndExecute(json.toFile(), useNs);
+            Msg.info(this, "We didn't crash!");
 
-        // Use a semaphore or something. Get the tool's TaskMonitor?
-        while (!cmd.getCompleted ()) {
-            Msg.debug(this, "Sleeping until completed.");
-            Thread.sleep(1000);
+            env.close(p);
         }
 
-        Msg.info(this, "We didn't crash!");
-
-        env.close(p);
-        
         env.dispose();
-
     }
 
 }

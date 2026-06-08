@@ -31,6 +31,9 @@ import ghidra.program.util.GhidraProgramUtilities;
 import ghidra.test.TestEnv;
 import ghidra.util.InvalidNameException;
 import ghidra.util.Msg;
+import ghidra.app.util.importer.ProgramLoader;
+import ghidra.app.util.opinion.LoadException;
+import ghidra.app.util.opinion.LoadResults;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.exception.DuplicateNameException;
 import ghidra.util.exception.VersionException;
@@ -293,18 +296,19 @@ public class GhiHornTestEnv {
 
     }
 
-    public Program importTestProgram(File exe) throws CancelledException, DuplicateNameException, InvalidNameException, VersionException, IOException {
+    public Program importTestProgram(File exe) throws CancelledException, DuplicateNameException, InvalidNameException, VersionException, IOException, LoadException {
 
-        // Import the program
-        Program p = env.getGhidraProject().importProgram(exe);
-        env.open(p);
-
-        env.getGhidraProject().analyze(p, true);
-
-        // And mark it as analyzed? Ok ghidra whatever.
-        GhidraProgramUtilities.markProgramAnalyzed(p);
-
-        return p;
+        try (LoadResults<Program> results = ProgramLoader.builder()
+                .source(exe)
+                .project(env.getGhidraProject().getProject())
+                .monitor(TaskMonitor.DUMMY)
+                .load()) {
+            Program p = results.getPrimaryDomainObject(this);
+            env.open(p);
+            env.getGhidraProject().analyze(p, true);
+            GhidraProgramUtilities.markProgramAnalyzed(p);
+            return p;
+        }
     }
 
     /**
