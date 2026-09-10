@@ -41,6 +41,7 @@ import ghidra.app.util.exporter.Exporter;
 import ghidra.app.util.exporter.ExporterException;
 import ghidra.framework.model.DomainObject;
 import ghidra.program.model.address.AddressSetView;
+import ghidra.program.model.listing.Program;
 import ghidra.util.task.TaskMonitor;
 
 /**
@@ -63,6 +64,11 @@ public class CsvExporter extends Exporter {
         // TODO: Name the exporter and associate a file extension with it
         // parameters are: exporter name String, file extension String, help location
         super("CERT FnHash CSV Exporter", "hash", null);
+    }
+
+    @Override
+    public boolean canExportDomainObject(Class<? extends DomainObject> domainObjectClass) {
+        return Program.class.isAssignableFrom(domainObjectClass);
     }
 
     @Override
