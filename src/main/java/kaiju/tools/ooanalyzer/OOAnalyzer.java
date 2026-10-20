@@ -745,6 +745,9 @@ public class OOAnalyzer {
    * @param ghidraClassType The Ghidra type
    */
   private void analyzeVftables(final Structure ghidraClassType, final Collection<Vftable> vftables) {
+    Integer ptrSize = dataTypeMgr != null
+        ? dataTypeMgr.getDataOrganization().getPointerSize()
+        : DataOrganizationImpl.getDefaultOrganization().getPointerSize();
 
     // These are the accumulated virtual function tables.
     Map<Address, List<Optional<Function>>> ooaVirtualFunctionTables = new ConcurrentHashMap<>();
@@ -770,7 +773,7 @@ public class OOAnalyzer {
 
           // The entry list may be null
           vftableEntries = IntStream.range(0, ooaVftable.getLength())
-            .map(n -> 4*n)
+            .map(n -> ptrSize*n)
             // Compute address of vftable entry
             .mapToLong(n -> n + ooaVftable.getEa ())
             .boxed ()
@@ -1174,7 +1177,7 @@ public class OOAnalyzer {
         // that. Otherwise add a pointer.
         if (vftableStruct.getComponentAt (offset) == null) {
           // Add a pointer data type so we have something there
-          PointerDataType pdt = new PointerDataType ();
+          PointerDataType pdt = new PointerDataType (dataTypeMgr);
           vftableStruct.insertAtOffset(offset, pdt, pdt.getLength(),
                                        String.valueOf(offset), "virtual function table entry.");
         }
@@ -1237,7 +1240,7 @@ public class OOAnalyzer {
     var ea = flatApi.toAddr (vftable.getEa ());
     if (!vftableMap.containsKey (ea)) {
       Structure vftableStruct = new StructureDataType(ghidraClassType.getCategoryPath (),
-                                                      ghidraClassType.getName() + "::vftable_" + Long.toHexString(vftable.getEa()).toLowerCase(), 0);
+                                                      ghidraClassType.getName() + "::vftable_" + Long.toHexString(vftable.getEa()).toLowerCase(), 0, dataTypeMgr);
 
       vftableMap.put(ea, vftableStruct);
     }
