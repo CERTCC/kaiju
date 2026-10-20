@@ -59,8 +59,8 @@ public class Method {
   @SerializedName("import")
   private Boolean imported;
 
-  public Integer getEa() {
-    return Integer.decode (ea);
+  public Long getEa() {
+    return Long.decode (ea);
   }
 
   public String getEaStr() {
