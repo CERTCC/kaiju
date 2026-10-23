@@ -134,7 +134,7 @@ public class HashViewerTableModel extends AddressBasedTableModel<ProgramLocation
         Swing.allowSwingToProcessEvents();
         for (Function funcInstance : localProgram.getFunctionManager().getFunctions(true)) {
             accumulator.add(createIndexedFunctionInstanceLocation(localProgram, funcInstance));
-            monitor.checkCanceled();
+            monitor.checkCancelled();
             monitor.incrementProgress(1);
         }
     }
