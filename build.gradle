@@ -98,23 +98,25 @@ else if (project.hasProperty("KAIJU_AUTOCATS_DIR")) {
 // you can also allow removal of the any previous Kaiju install prior to
 // reinstalling by adding -PKAIJU_AUTO_REMOVE
 
-import org.gradle.util.VersionNumber
+import org.gradle.util.GradleVersion
 
 // Gradle 6.4+ is needed to compile the markdown gradle plugin written in groovy
 // Ghidra 10 requires gradle 6.8 or above
-if (VersionNumber.parse( gradle.gradleVersion ) <= VersionNumber.parse ("6.8.0")) {
+if (GradleVersion.version( gradle.gradleVersion ) <= GradleVersion.version ("6.8.0")) {
     throw new GradleException("CERT Kaiju requires at least gradle version 6.8.0. Please update gradle and retry.")
 }
 
-// Export GHIDRA_10_4 and _11_1 for conditional compilation
+// Export Ghidra version flags for conditional compilation
 def ghidraVersion = project.ext.ghidra_version;
 compileJava {
-    options.compilerArgs << '-AGHIDRA_10_4=' + (VersionNumber.parse( ghidraVersion ) >= VersionNumber.parse("10.4")) \
-                         << '-AGHIDRA_11_1=' + (VersionNumber.parse( ghidraVersion ) >= VersionNumber.parse("11.1"))
+    options.compilerArgs << '-AGHIDRA_10_4=' + (GradleVersion.version( ghidraVersion ) >= GradleVersion.version("10.4")) \
+                         << '-AGHIDRA_11_1=' + (GradleVersion.version( ghidraVersion ) >= GradleVersion.version("11.1")) \
+                         << '-AGHIDRA_12_2=' + (GradleVersion.version( ghidraVersion ) >= GradleVersion.version("12.2"))
 }
 compileTestJava {
-    options.compilerArgs << '-AGHIDRA_10_4=' + (VersionNumber.parse( ghidraVersion ) >= VersionNumber.parse("10.4")) \
-                         << '-AGHIDRA_11_1=' + (VersionNumber.parse( ghidraVersion ) >= VersionNumber.parse("11.1"))
+    options.compilerArgs << '-AGHIDRA_10_4=' + (GradleVersion.version( ghidraVersion ) >= GradleVersion.version("10.4")) \
+                         << '-AGHIDRA_11_1=' + (GradleVersion.version( ghidraVersion ) >= GradleVersion.version("11.1")) \
+                         << '-AGHIDRA_12_2=' + (GradleVersion.version( ghidraVersion ) >= GradleVersion.version("12.2"))
 }
 repositories {
     mavenCentral()
@@ -122,8 +124,8 @@ repositories {
 
 dependencies {
 
-    annotationProcessor 'systems.manifold:manifold-preprocessor:2023.1.28'
-    testAnnotationProcessor 'systems.manifold:manifold-preprocessor:2023.1.28'
+    annotationProcessor 'systems.manifold:manifold-preprocessor:2026.1.16'
+    testAnnotationProcessor 'systems.manifold:manifold-preprocessor:2026.1.16'
     
     testImplementation(
         'junit:junit:4.12', // needed on classpath to support junit 5 vintage
@@ -132,6 +134,7 @@ dependencies {
         'org.junit.jupiter:junit-jupiter-migrationsupport:5.9.2'
     )
     testRuntimeOnly(
+        'org.junit.platform:junit-platform-launcher:1.9.2', // explicit launcher required by Gradle 9
         'org.junit.jupiter:junit-jupiter-engine:5.9.2',
         'org.junit.vintage:junit-vintage-engine:5.9.2'
     )
@@ -153,7 +156,7 @@ buildExtension.exclude '.vscode/**'
 
 task printGhidraDir {
     println 'Using Ghidra install directory ' + ghidraInstallDir
-    println 'Using Java ' + targetCompatibility + ' for Ghidra ' + ghidraVersion
+    println 'Using Java ' + compileJava.targetCompatibility + ' for Ghidra ' + ghidraVersion
     println 'Using AUTOCATS test directory ' + autocatsDir
 }
 
@@ -473,7 +476,7 @@ test {
     // Ghidra 12.1+ requires the serial filter factory to be set before Application.initializeApplication()
     // is called, otherwise setSerialFilterFactory throws IllegalStateException. Setting this property
     // causes the JVM to install Ghidra's factory at startup, before any test code runs.
-    if (VersionNumber.parse(ghidraVersion) >= VersionNumber.parse("12.1")) {
+    if (GradleVersion.version(ghidraVersion) >= GradleVersion.version("12.1")) {
         jvmArgs += '-Djdk.serialFilterFactory=ghidra.framework.remote.GhidraSerialFilterFactory'
     }
     useJUnitPlatform()

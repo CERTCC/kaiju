@@ -2,6 +2,7 @@ package kaiju.tools.ghihorn.frg;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -22,7 +23,7 @@ import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.Program;
 import ghidra.util.Msg;
 import ghidra.util.datastruct.Accumulator;
-import ghidra.util.datastruct.SynchronizedListAccumulator;
+import ghidra.util.datastruct.ListAccumulator;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.exception.NotFoundException;
 import ghidra.util.task.TaskMonitor;
@@ -80,13 +81,18 @@ public class FrgBuilder {
 		monitor.setMessage("Finding paths...");
 
 
-		// if to is an ancestor of from
-		Accumulator<FrgResult> pathAccumulator = new SynchronizedListAccumulator<>();
+		// ListAccumulator became thread safe in Ghidra 12.2.
+#if GHIDRA_12_2 == "true"
+		ListAccumulator<FrgResult> pathAccumulator = new ListAccumulator<>();
+#else
+		ListAccumulator<FrgResult> pathAccumulator =
+			new ListAccumulator<>(Collections.synchronizedList(new ArrayList<>()));
+#endif
 
 		GraphAlgorithms.findPaths(graph, fromVtx, toVtx,
 				new PassThroughAccumulator(pathAccumulator), monitor);
 
-		if (pathAccumulator.isEmpty()) {
+		if (pathAccumulator.size() == 0) {
 			Set<FrgVertex> fromAncestors = GraphAlgorithms.getAncestors(graph, new ArrayList<>() {
 				{
 					add(fromVtx);
@@ -128,7 +134,7 @@ public class FrgBuilder {
 		CodeBlockIterator codeBlocks = getCallGraphBlocks(monitor);
 
 		while (codeBlocks.hasNext()) {
-			monitor.checkCanceled();
+			monitor.checkCancelled();
 
 			CodeBlock block = codeBlocks.next();
 			monitor.setMessage("Creating callgraph - block " + block.getMinAddress());
@@ -185,7 +191,7 @@ public class FrgBuilder {
 
 		CodeBlockReferenceIterator iterator = sourceBlock.getDestinations(monitor);
 		while (iterator.hasNext()) {
-			monitor.checkCanceled();
+			monitor.checkCancelled();
 
 			CodeBlockReference destination = iterator.next();
 			CodeBlock targetBlock = getDestinationBlock(destination, monitor);
@@ -232,13 +238,12 @@ public class FrgBuilder {
 	 */
 	private class PassThroughAccumulator implements Accumulator<List<FrgVertex>> {
 
-		private Accumulator<FrgResult> accumulator;
+		private ListAccumulator<FrgResult> accumulator;
 
-		PassThroughAccumulator(Accumulator<FrgResult> accumulator) {
+		PassThroughAccumulator(ListAccumulator<FrgResult> accumulator) {
 			this.accumulator = accumulator;
 		}
 
-		@Override
 		public Iterator<List<FrgVertex>> iterator() {
 			throw new UnsupportedOperationException();
 		}
@@ -255,17 +260,19 @@ public class FrgBuilder {
 			}
 		}
 
-		@Override
 		public boolean contains(List<FrgVertex> t) {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override
 		public Collection<List<FrgVertex>> get() {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override
+		// Required by Accumulator in Ghidra 12.2; harmless on older versions.
+		public int getProgress() {
+			return accumulator.size();
+		}
+
 		public int size() {
 			return accumulator.size();
 		}

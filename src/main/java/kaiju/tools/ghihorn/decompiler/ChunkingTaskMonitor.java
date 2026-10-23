@@ -29,8 +29,8 @@ public class ChunkingTaskMonitor extends TaskMonitorAdapter {
     }
 
     @Override
-    public void checkCanceled() throws CancelledException {
-        monitor.checkCanceled();
+    public void checkCancelled() throws CancelledException {
+        monitor.checkCancelled();
     }
 
     @Override
